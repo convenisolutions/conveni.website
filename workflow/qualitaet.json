@@ -1,0 +1,62 @@
+{
+  "nguyen_thi_lan": {
+    "name": "Nguyen Thi Lan",
+    "kurseintraege": [
+      {
+        "kurstraeger_id": "S001",
+        "kurstraeger_name": "VHS München",
+        "modul": "BSK-900",
+        "abschluss_datum": "2026-04-15",
+        "pruefungsergebnis": "bestanden",
+        "erreichtes_niveau": "B2",
+        "bewertung_kurstraeger": 5,
+        "notiz": "Sehr gute Betreuung, klare Kursstruktur"
+      }
+    ]
+  },
+  "maria_santos": {
+    "name": "Maria Santos",
+    "kurseintraege": [
+      {
+        "kurstraeger_id": "S001",
+        "kurstraeger_name": "VHS München",
+        "modul": "BSK-900",
+        "abschluss_datum": "2026-03-20",
+        "pruefungsergebnis": "bestanden",
+        "erreichtes_niveau": "B2",
+        "bewertung_kurstraeger": 4,
+        "notiz": "Guter Kurs, Lehrmaterial könnte moderner sein"
+      }
+    ]
+  },
+  "jose_reyes": {
+    "name": "Jose Reyes",
+    "kurseintraege": [
+      {
+        "kurstraeger_id": "S002",
+        "kurstraeger_name": "Sprachschule Alpha GmbH",
+        "modul": "BSK-510",
+        "abschluss_datum": "2026-02-28",
+        "pruefungsergebnis": "bestanden",
+        "erreichtes_niveau": "B1",
+        "bewertung_kurstraeger": 4,
+        "notiz": "Prüfung knapp bestanden, aber stabile Leistung im Kurs"
+      }
+    ]
+  },
+  "van_minh_tran": {
+    "name": "Van Minh Tran",
+    "kurseintraege": [
+      {
+        "kurstraeger_id": "S003",
+        "kurstraeger_name": "BFZ Bildungszentrum Bayern",
+        "modul": "BSK-510",
+        "abschluss_datum": "2026-03-10",
+        "pruefungsergebnis": "bestanden",
+        "erreichtes_niveau": "B1",
+        "bewertung_kurstraeger": 5,
+        "notiz": "Top Kursträger, sehr strukturierter Unterricht"
+      }
+    ]
+  }
+}

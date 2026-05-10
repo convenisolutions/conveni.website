@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Partnerschulen – Conveni</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; background: #f0f4f8; }
+
+    .header {
+      background: linear-gradient(135deg, #1a3a5c, #2a6496);
+      color: #fff; padding: 22px 32px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .header h1 { font-size: 20px; }
+    .header .datum { font-size: 12px; opacity: 0.8; margin-top: 3px; }
+    .main { max-width: 1200px; margin: 0 auto; padding: 24px 20px; }
+
+    .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+    .stat-card {
+      background: #fff; border-radius: 8px; padding: 16px 18px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08); text-align: center;
+    }
+    .stat-zahl { font-size: 32px; font-weight: 700; line-height: 1; }
+    .stat-label { font-size: 11px; color: #666; margin-top: 4px; }
+    .c-blau  { color: #1a6b9e; }
+    .c-gruen { color: #28a745; }
+    .c-orange{ color: #e6a800; }
+    .c-grau  { color: #6c757d; }
+    .c-gold  { color: #c8860a; }
+
+    .section-title {
+      font-size: 15px; font-weight: 700; color: #1a3a5c;
+      border-left: 4px solid #2a6496; padding-left: 10px;
+      margin: 24px 0 12px;
+    }
+
+    .table-wrap {
+      background: #fff; border-radius: 8px; overflow: hidden;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08); margin-bottom: 24px;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      background: #1a3a5c; color: #fff; padding: 9px 12px;
+      text-align: left; font-size: 11px; font-weight: 600; white-space: nowrap;
+    }
+    td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: top; font-size: 12px; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f5f9ff; }
+
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; white-space: nowrap; }
+    .badge-grau   { background: #e9ecef; color: #495057; }
+    .badge-blau   { background: #cce5ff; color: #004085; }
+    .badge-orange { background: #ffe8cc; color: #7d4000; }
+    .badge-gruen  { background: #d4edda; color: #155724; }
+    .badge-rot    { background: #f8d7da; color: #721c24; }
+
+    .angebot-tag {
+      display: inline-block; padding: 2px 6px; border-radius: 8px;
+      font-size: 10px; background: #e3f0fb; color: #0d3b66; margin: 1px;
+    }
+    .angebot-tag-bsk900 { background: #d4edda; color: #155724; }
+    .angebot-tag-fbd    { background: #fff3cd; color: #856404; }
+
+    .stars { color: #f0ad00; font-size: 13px; }
+    .stars-leer { color: #ddd; font-size: 13px; }
+
+    /* Akquise-Pipeline */
+    .pipeline { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+    .pipeline-col {
+      background: #fff; border-radius: 8px; padding: 14px 16px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+    }
+    .pipeline-col-titel {
+      font-size: 12px; font-weight: 700; color: #1a3a5c;
+      border-bottom: 2px solid #e8ecf0; padding-bottom: 8px; margin-bottom: 10px;
+    }
+    .pipeline-item {
+      padding: 7px 0; border-bottom: 1px dashed #e8ecf0; font-size: 12px;
+    }
+    .pipeline-item:last-child { border-bottom: none; }
+    .pipeline-item-name { font-weight: 600; }
+    .pipeline-item-sub { font-size: 10px; color: #888; margin-top: 2px; }
+
+    /* Matching-Tabelle */
+    .match-schule { display: inline-block; background: #e3f0fb; color: #0d3b66;
+      padding: 2px 7px; border-radius: 8px; font-size: 10px; margin: 1px; }
+    .match-schule-top { background: #d4edda; color: #155724; }
+
+    /* Angebots-Matrix */
+    .matrix-wrap { overflow-x: auto; margin-bottom: 24px; }
+    .matrix-table { border-collapse: collapse; font-size: 11px; min-width: 600px; }
+    .matrix-table th { background: #1a3a5c; color: #fff; padding: 7px 10px; text-align: center; font-size: 10px; }
+    .matrix-table th.name-col { text-align: left; min-width: 160px; }
+    .matrix-table td { border: 1px solid #dee2e6; padding: 6px 10px; text-align: center; }
+    .matrix-table td.name-col { text-align: left; font-weight: 600; background: #f8f9fa; }
+    .matrix-ja  { color: #28a745; font-weight: 700; font-size: 14px; }
+    .matrix-nein { color: #dee2e6; }
+
+    .footer { text-align: center; color: #999; font-size: 11px; padding: 20px 0 30px; }
+    @media print { body { background: white; } .main { padding: 10px; } }
+  </style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>Partnerschulen &amp; Kursträger</h1>
+    <div class="datum">Conveni Personalvermittlung | Stand: {{ datum }}</div>
+  </div>
+  <div style="color:#fff;opacity:0.9;font-size:13px;text-align:right;">
+    Akquise-Pipeline &amp; Kandidaten-Matching<br>BAMF-Kursträger Übersicht
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- Statistik -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-zahl c-blau">{{ statistik.gesamt }}</div>
+      <div class="stat-label">Kursträger gesamt</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-zahl c-gruen">{{ statistik.aktiv }}</div>
+      <div class="stat-label">Aktive Partner</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-zahl c-orange">{{ statistik.in_akquise }}</div>
+      <div class="stat-label">In Akquise</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-zahl c-grau">{{ statistik.potenzial }}</div>
+      <div class="stat-label">Potenzial (noch nicht kontaktiert)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-zahl c-gold">
+        {% if statistik.avg_bewertung %}{{ statistik.avg_bewertung }}{% else %}–{% endif %}
+      </div>
+      <div class="stat-label">⌀ Partnerbewertung</div>
+    </div>
+  </div>
+
+  <!-- Akquise-Pipeline -->
+  <div class="section-title">Akquise-Pipeline</div>
+  <div class="pipeline">
+
+    <div class="pipeline-col">
+      <div class="pipeline-col-titel">
+        <span class="badge badge-gruen">Aktive Partner ({{ pipeline.aktiv|length + pipeline.vertrag|length }})</span>
+      </div>
+      {% for s in pipeline.aktiv + pipeline.vertrag %}
+      <div class="pipeline-item">
+        <div class="pipeline-item-name">{{ s.name }}</div>
+        <div class="pipeline-item-sub">
+          {{ s.stadt }} | {{ s.angebote|join(', ') }}
+          {% if s.bewertung %} | ★ {{ s.bewertung }}{% endif %}
+        </div>
+      </div>
+      {% else %}
+      <div style="color:#999;font-size:11px;padding:8px 0;">Noch keine aktiven Partner</div>
+      {% endfor %}
+    </div>
+
+    <div class="pipeline-col">
+      <div class="pipeline-col-titel">
+        <span class="badge badge-orange">In Akquise ({{ pipeline.angefragt|length + pipeline.angebot_erhalten|length }})</span>
+      </div>
+      {% for s in pipeline.angefragt + pipeline.angebot_erhalten %}
+      <div class="pipeline-item">
+        <div class="pipeline-item-name">{{ s.name }}</div>
+        <div class="pipeline-item-sub">
+          {{ kontakt_statuswerte[s.kontakt_status].label }} | {{ s.kontakt_person }}
+          {% if s.kooperationsrabatt_pct %} | {{ s.kooperationsrabatt_pct }} % Rabatt möglich{% endif %}
+        </div>
+      </div>
+      {% else %}
+      <div style="color:#999;font-size:11px;padding:8px 0;">Keine laufenden Akquisen</div>
+      {% endfor %}
+    </div>
+
+    <div class="pipeline-col">
+      <div class="pipeline-col-titel">
+        <span class="badge badge-grau">Potenzial ({{ pipeline.noch_nicht|length }})</span>
+      </div>
+      {% for s in pipeline.noch_nicht %}
+      <div class="pipeline-item">
+        <div class="pipeline-item-name">{{ s.name }}</div>
+        <div class="pipeline-item-sub">
+          {{ s.stadt }} | {{ s.angebote[:3]|join(', ') }}{% if s.angebote|length > 3 %}…{% endif %}
+        </div>
+      </div>
+      {% else %}
+      <div style="color:#999;font-size:11px;padding:8px 0;">Keine weiteren Potenziale</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Kursträger-Tabelle -->
+  <div class="section-title">Alle Kursträger im Detail</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Typ</th>
+          <th>Stadt</th>
+          <th>BAMF-Nr.</th>
+          <th>Angebote</th>
+          <th>Kapazität</th>
+          <th>Preis/UE</th>
+          <th>Rabatt</th>
+          <th>Nächster Start</th>
+          <th>Status</th>
+          <th>Bewertung</th>
+          <th>Passende Kandidaten</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in schulen %}
+        <tr>
+          <td style="color:#888;font-size:10px;">{{ s.id }}</td>
+          <td>
+            <strong>{{ s.name }}</strong><br>
+            <span style="font-size:10px;color:#888;">{{ s.kontakt_person }} · {{ s.email }}</span>
+          </td>
+          <td><span class="badge badge-grau">{{ s.traeger_typ }}</span></td>
+          <td>{{ s.stadt }}<br><span style="font-size:10px;color:#888;">{{ s.plz }}</span></td>
+          <td style="font-size:10px;color:#555;">{{ s.bamf_traeger_nr if s.bamf_zugelassen else '–' }}</td>
+          <td>
+            {% for a in s.angebote %}
+              {% if 'BSK-900' in a %}
+                <span class="angebot-tag angebot-tag-bsk900">{{ a }}</span>
+              {% elif 'FbD' in a %}
+                <span class="angebot-tag angebot-tag-fbd">{{ a }}</span>
+              {% else %}
+                <span class="angebot-tag">{{ a }}</span>
+              {% endif %}
+            {% endfor %}
+          </td>
+          <td style="text-align:center;">{{ s.kapazitaet_pro_kurs }} Pers.</td>
+          <td style="text-align:right;">{{ "%.2f"|format(s.preis_ue) }} €</td>
+          <td style="text-align:center;">
+            {% if s.kooperationsrabatt_pct %}
+              <span class="badge badge-gruen">{{ s.kooperationsrabatt_pct }} %</span>
+            {% else %}–{% endif %}
+          </td>
+          <td style="white-space:nowrap;">{{ s.naechster_kursbeginn }}</td>
+          <td>
+            <span class="badge badge-{{ kontakt_statuswerte[s.kontakt_status].farbe }}">
+              {{ kontakt_statuswerte[s.kontakt_status].label }}
+            </span>
+          </td>
+          <td style="text-align:center;">
+            {% if s.bewertung %}
+              <span class="stars">{% for i in range(s.bewertung|round|int) %}★{% endfor %}</span>
+              <span class="stars-leer">{% for i in range(5 - s.bewertung|round|int) %}★{% endfor %}</span>
+              <br><span style="font-size:10px;color:#888;">{{ s.bewertung }}/5</span>
+            {% else %}
+              <span style="color:#ccc;">nicht bewertet</span>
+            {% endif %}
+          </td>
+          <td>
+            {% set kands = kandidaten_pro_schule[s.id] %}
+            {% if kands %}
+              {% for n in kands[:4] %}
+                <span style="font-size:10px;">{{ n.split(' ')[0] }}</span>{% if not loop.last %}, {% endif %}
+              {% endfor %}
+              {% if kands|length > 4 %} +{{ kands|length - 4 }} weitere{% endif %}
+            {% else %}
+              <span style="color:#ccc;font-size:10px;">–</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Kandidaten-Matching -->
+  {% if matchings %}
+  <div class="section-title">Kandidaten-Matching (empfohlene Kursträger)</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Kandidat</th>
+          <th>Berufsfeld</th>
+          <th>Benötigte Kurse</th>
+          <th>Empfohlene Kursträger (nach Bewertung)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in matchings %}
+        <tr>
+          <td><strong>{{ m.kandidat.name }}</strong><br>
+            <span style="font-size:10px;color:#888;">{{ m.kandidat.nationalitaet }}</span></td>
+          <td>{{ m.kandidat.berufsfeld }}</td>
+          <td>
+            {% for p in m.kandidat.berechtigte_programme[:3] %}
+              <span style="font-size:10px;display:block;">{{ p.name.split('–')[0].strip()[:30] }}</span>
+            {% endfor %}
+          </td>
+          <td>
+            {% for s in m.schulen %}
+              <span class="match-schule {% if loop.first %}match-schule-top{% endif %}">
+                {% if loop.first %}★ {% endif %}{{ s.name }} ({{ s.stadt }})
+              </span>
+            {% endfor %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- Angebots-Matrix -->
+  <div class="section-title">Angebots-Matrix: Welche Schule bietet was?</div>
+  <div class="matrix-wrap">
+    <table class="matrix-table">
+      <thead>
+        <tr>
+          <th class="name-col">Kursträger</th>
+          {% for a in alle_angebote %}
+          <th>{{ a }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in schulen %}
+        <tr>
+          <td class="name-col">{{ s.name }}</td>
+          {% for a in alle_angebote %}
+          <td>
+            {% if a in s.angebote %}
+              <span class="matrix-ja">✓</span>
+            {% else %}
+              <span class="matrix-nein">–</span>
+            {% endif %}
+          </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Legende -->
+  <div style="background:#fff;border-radius:8px;padding:14px 20px;box-shadow:0 1px 6px rgba(0,0,0,0.08);font-size:11px;color:#555;">
+    <strong>Statuswerte:</strong>
+    {% for k, v in kontakt_statuswerte.items() %}
+      <span class="badge badge-{{ v.farbe }}" style="margin:2px;">{{ v.label }}</span>
+    {% endfor %}
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <span class="angebot-tag angebot-tag-bsk900">BSK-900</span> = Pflege-/Med.-Kurs (höchste Priorität)
+    &nbsp;
+    <span class="angebot-tag angebot-tag-fbd">FbD</span> = ESF-gefördert
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <strong>★ Erstes Match</strong> = bestbewerteter aktiver Partner
+  </div>
+
+</div>
+<div class="footer">Conveni Personalvermittlung | Partnerschulen-Bericht | {{ datum }}</div>
+</body>
+</html>

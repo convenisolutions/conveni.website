@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Qualitätsbericht – Conveni</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; background: #f0f4f8; }
+
+    .header {
+      background: linear-gradient(135deg, #1b4f3a, #2d7a58);
+      color: #fff; padding: 22px 32px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .header h1 { font-size: 20px; }
+    .header .datum { font-size: 12px; opacity: 0.8; margin-top: 3px; }
+    .main { max-width: 1200px; margin: 0 auto; padding: 24px 20px; }
+
+    /* KPI-Karten */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+    .kpi-card {
+      background: #fff; border-radius: 8px; padding: 18px 20px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08); text-align: center;
+      border-top: 3px solid #e0e0e0;
+    }
+    .kpi-zahl { font-size: 36px; font-weight: 700; line-height: 1; }
+    .kpi-label { font-size: 11px; color: #666; margin-top: 5px; }
+    .kpi-sub { font-size: 10px; color: #aaa; margin-top: 3px; }
+    .kpi-gruen  { border-top-color: #28a745; }
+    .kpi-gruen  .kpi-zahl { color: #28a745; }
+    .kpi-blau   { border-top-color: #1a6b9e; }
+    .kpi-blau   .kpi-zahl { color: #1a6b9e; }
+    .kpi-orange { border-top-color: #fd7e14; }
+    .kpi-orange .kpi-zahl { color: #fd7e14; }
+    .kpi-gold   { border-top-color: #c8860a; }
+    .kpi-gold   .kpi-zahl { color: #c8860a; }
+
+    .section-title {
+      font-size: 15px; font-weight: 700; color: #1b4f3a;
+      border-left: 4px solid #2d7a58; padding-left: 10px;
+      margin: 24px 0 12px;
+    }
+
+    /* Status-Verteilung */
+    .status-chart { background: #fff; border-radius: 8px; padding: 20px 24px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08); margin-bottom: 24px; }
+    .status-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .status-row:last-child { margin-bottom: 0; }
+    .status-label { width: 200px; font-size: 12px; flex-shrink: 0; }
+    .status-bar-wrap { flex: 1; background: #e9ecef; border-radius: 4px; height: 18px; overflow: hidden; }
+    .status-bar { height: 18px; border-radius: 4px; transition: width 0.3s; display: flex; align-items: center; padding-left: 8px; }
+    .status-bar span { font-size: 10px; color: #fff; font-weight: 600; white-space: nowrap; }
+    .status-anzahl { width: 30px; text-align: right; font-weight: 700; font-size: 12px; }
+    .bar-grau   { background: #adb5bd; }
+    .bar-blau   { background: #1a6b9e; }
+    .bar-orange { background: #fd7e14; }
+    .bar-gruen  { background: #28a745; }
+    .bar-rot    { background: #dc3545; }
+
+    /* Kursträger-Rangliste */
+    .table-wrap { background: #fff; border-radius: 8px; overflow: hidden;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08); margin-bottom: 24px; }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #1b4f3a; color: #fff; padding: 9px 12px; text-align: left;
+      font-size: 11px; font-weight: 600; white-space: nowrap; }
+    td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: top; font-size: 12px; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f5fff8; }
+
+    .stars { color: #f0ad00; }
+    .rank-1 td:first-child { border-left: 4px solid #c8860a; }
+    .rank-2 td:first-child { border-left: 4px solid #adb5bd; }
+    .rank-3 td:first-child { border-left: 4px solid #cd7f32; }
+
+    /* Erfolgsquote-Balken */
+    .eq-wrap { width: 100px; background: #e9ecef; border-radius: 3px; height: 8px; display: inline-block; vertical-align: middle; }
+    .eq-fill { height: 8px; border-radius: 3px; background: #28a745; }
+
+    /* Kandidaten-Verlauf */
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px;
+      font-size: 10px; font-weight: 600; white-space: nowrap; }
+    .badge-grau   { background: #e9ecef; color: #495057; }
+    .badge-blau   { background: #cce5ff; color: #004085; }
+    .badge-orange { background: #ffe8cc; color: #7d4000; }
+    .badge-gruen  { background: #d4edda; color: #155724; }
+    .badge-rot    { background: #f8d7da; color: #721c24; }
+
+    .progress-bar-wrap { width: 80px; background: #e9ecef; border-radius: 4px;
+      height: 6px; display: inline-block; vertical-align: middle; overflow: hidden; }
+    .progress-bar-fill { height: 6px; border-radius: 4px; background: #28a745; }
+
+    .kurs-eintrag { padding: 4px 8px; background: #f8f9fa; border-radius: 4px;
+      margin: 2px 0; font-size: 11px; display: flex; gap: 8px; align-items: center; }
+    .kurs-bestanden { border-left: 3px solid #28a745; }
+    .kurs-nicht_bestanden { border-left: 3px solid #dc3545; }
+    .kurs-abgebrochen { border-left: 3px solid #6c757d; }
+
+    /* Hinweis-Box wenn keine Daten */
+    .empty-hint { background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px;
+      padding: 14px 18px; color: #856404; font-size: 12px; margin-bottom: 16px; }
+
+    .footer { text-align: center; color: #999; font-size: 11px; padding: 20px 0 30px; }
+    @media print { body { background: white; } .main { padding: 10px; } }
+  </style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>Qualitätsbericht</h1>
+    <div class="datum">Conveni Personalvermittlung | Stand: {{ datum }}</div>
+  </div>
+  <div style="color:#fff;opacity:0.9;font-size:13px;text-align:right;">
+    Kursergebnisse · Kursträger-Bewertungen<br>Workflow-KPIs &amp; Vermittlungsquote
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- KPI-Karten -->
+  <div class="kpi-grid">
+    <div class="kpi-card kpi-blau">
+      <div class="kpi-zahl">{{ kpis.kandidaten_gesamt }}</div>
+      <div class="kpi-label">Kandidaten gesamt</div>
+      <div class="kpi-sub">{{ kpis.aktiv_in_kurs }} aktiv im Kurs</div>
+    </div>
+    <div class="kpi-card kpi-gruen">
+      <div class="kpi-zahl">
+        {% if kpis.vermittlungsquote_pct is not none %}{{ kpis.vermittlungsquote_pct }} %{% else %}–{% endif %}
+      </div>
+      <div class="kpi-label">Vermittlungsquote</div>
+      <div class="kpi-sub">{{ kpis.vermittelt }} von {{ kpis.kandidaten_gesamt }} vermittelt</div>
+    </div>
+    <div class="kpi-card kpi-orange">
+      <div class="kpi-zahl">
+        {% if kpis.erfolgsquote_pct is not none %}{{ kpis.erfolgsquote_pct }} %{% else %}–{% endif %}
+      </div>
+      <div class="kpi-label">Prüfungs-Erfolgsquote</div>
+      <div class="kpi-sub">{{ kpis.bestanden }} bestanden / {{ kpis.kurs_gesamt }} Prüfungen</div>
+    </div>
+    <div class="kpi-card kpi-gold">
+      <div class="kpi-zahl">
+        {% if kpis.durchschnitt_bewertung %}{{ kpis.durchschnitt_bewertung }}/5{% else %}–{% endif %}
+      </div>
+      <div class="kpi-label">⌀ Kursträger-Bewertung</div>
+      <div class="kpi-sub">aus Kandidaten-Feedback</div>
+    </div>
+  </div>
+
+  <!-- Status-Verteilung -->
+  <div class="section-title">Workflow-Status Verteilung ({{ gesamt_kandidaten }} Kandidaten)</div>
+  <div class="status-chart">
+    {% if status_verteilung %}
+      {% for label, data in status_verteilung %}
+      {% set breite = [(data.anzahl / gesamt_kandidaten * 100)|round|int, 3]|max %}
+      <div class="status-row">
+        <div class="status-label">{{ label }}</div>
+        <div class="status-bar-wrap">
+          <div class="status-bar bar-{{ data.farbe }}" style="width:{{ breite }}%;">
+            {% if breite > 15 %}<span>{{ data.anzahl }}</span>{% endif %}
+          </div>
+        </div>
+        <div class="status-anzahl">{{ data.anzahl }}</div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div style="color:#999;text-align:center;padding:20px;">Noch keine Status-Daten – status_manager.py --liste ausführen</div>
+    {% endif %}
+  </div>
+
+  <!-- Kursträger-Rangliste -->
+  <div class="section-title">Kursträger-Rangliste</div>
+  {% if kursträger_ranking %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Kursträger</th>
+          <th>Kurse gesamt</th>
+          <th>Bestanden</th>
+          <th>Erfolgsquote</th>
+          <th>⌀ Bewertung</th>
+          <th>Module</th>
+          <th>Kommentare</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for kt in kursträger_ranking %}
+        <tr class="{% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% endif %}">
+          <td style="font-weight:700;color:#888;">
+            {% if loop.index == 1 %}🥇{% elif loop.index == 2 %}🥈{% elif loop.index == 3 %}🥉{% else %}{{ loop.index }}{% endif %}
+          </td>
+          <td><strong>{{ kt.name }}</strong></td>
+          <td style="text-align:center;">{{ kt.kurs_gesamt }}</td>
+          <td style="text-align:center;">{{ kt.bestanden }}</td>
+          <td>
+            <div class="eq-wrap"><div class="eq-fill" style="width:{{ kt.erfolgsquote_pct }}%;"></div></div>
+            <span style="margin-left:6px;font-weight:600;">{{ kt.erfolgsquote_pct }} %</span>
+          </td>
+          <td style="text-align:center;">
+            {% if kt.durchschnitt_bewertung %}
+              <span class="stars">{% for i in range(kt.durchschnitt_bewertung|round|int) %}★{% endfor %}</span>
+              <br><span style="font-size:10px;color:#888;">{{ kt.durchschnitt_bewertung }}/5</span>
+            {% else %}–{% endif %}
+          </td>
+          <td>
+            {% for m in kt.module %}
+              <span style="font-size:10px;background:#e3f0fb;color:#0d3b66;padding:1px 5px;border-radius:6px;display:inline-block;margin:1px;">{{ m }}</span>
+            {% endfor %}
+          </td>
+          <td style="font-size:10px;color:#555;max-width:200px;">
+            {% for notiz in kt.letzte_bewertungen[:2] %}
+              <div style="margin-bottom:2px;">„{{ notiz[:60] }}{% if notiz|length > 60 %}…{% endif %}"</div>
+            {% endfor %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-hint">
+    Noch keine Kursergebnisse erfasst. Bitte ausführen:<br>
+    <code>python qualitaet_manager.py --init-beispieldaten</code><br>
+    oder Ergebnisse manuell erfassen:<br>
+    <code>python qualitaet_manager.py --erfasse "Name" --kurs S001 --modul BSK-900 --ergebnis bestanden --niveau B2 --bewertung 5</code>
+  </div>
+  {% endif %}
+
+  <!-- Kandidaten-Verlauf -->
+  <div class="section-title">Kandidaten-Verlauf &amp; Kursergebnisse</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Kandidat</th>
+          <th>Nationalität</th>
+          <th>Berufsfeld</th>
+          <th>Niveau</th>
+          <th>Workflow-Status</th>
+          <th>Fortschritt</th>
+          <th>Kursabschlüsse</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for k in kandidaten_detail %}
+        <tr>
+          <td><strong>{{ k.name }}</strong></td>
+          <td>{{ k.nationalitaet }}</td>
+          <td>{{ k.berufsfeld }}</td>
+          <td><span class="badge badge-blau">{{ k.sprachniveau }}</span></td>
+          <td>
+            <span class="badge badge-{{ k.status_farbe }}">{{ k.status_label }}</span>
+            {% if k.notiz %}<br><span style="font-size:10px;color:#888;">{{ k.notiz[:35] }}</span>{% endif %}
+          </td>
+          <td>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" style="width:{{ k.fortschritt }}%;"></div>
+            </div>
+            <span style="font-size:10px;color:#888;margin-left:4px;">{{ k.fortschritt }} %</span>
+          </td>
+          <td>
+            {% if k.kurseintraege %}
+              {% for e in k.kurseintraege %}
+              <div class="kurs-eintrag kurs-{{ e.pruefungsergebnis }}">
+                <strong>{{ e.modul }}</strong>
+                <span style="color:#555;">{{ e.kurstraeger_name.split(' ')[0] }}</span>
+                <span>→ {{ e.pruefungsergebnis }}</span>
+                {% if e.erreichtes_niveau %}<span class="badge badge-blau">{{ e.erreichtes_niveau }}</span>{% endif %}
+                {% if e.bewertung_kurstraeger %}<span style="color:#f0ad00;">★ {{ e.bewertung_kurstraeger }}</span>{% endif %}
+              </div>
+              {% endfor %}
+            {% else %}
+              <span style="color:#ccc;font-size:10px;">noch kein Kursabschluss</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Legende -->
+  <div style="background:#fff;border-radius:8px;padding:14px 20px;box-shadow:0 1px 6px rgba(0,0,0,0.08);font-size:11px;color:#555;">
+    <strong>Kursergebnis-Farben:</strong>
+    <span style="border-left:3px solid #28a745;padding-left:6px;margin:0 8px;">bestanden</span>
+    <span style="border-left:3px solid #dc3545;padding-left:6px;margin:0 8px;">nicht bestanden</span>
+    <span style="border-left:3px solid #6c757d;padding-left:6px;margin:0 8px;">abgebrochen</span>
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <strong>Ergebnis erfassen:</strong>
+    <code style="background:#f0f4f8;padding:2px 6px;border-radius:3px;">
+      python qualitaet_manager.py --erfasse "Name" --kurs S001 --modul BSK-900 --ergebnis bestanden --niveau B2 --bewertung 5
+    </code>
+  </div>
+
+</div>
+<div class="footer">Conveni Personalvermittlung | Qualitätsbericht | {{ datum }}</div>
+</body>
+</html>

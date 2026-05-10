@@ -275,8 +275,15 @@ def main():
     tmp_csv = Path(__file__).parent / "_sheets_export_tmp.csv"
     df.to_csv(tmp_csv, index=False)
 
-    scripts = ["check_foerderung.py", "generate_checklisten.py",
-               "generate_uebersicht.py", "generate_kalender.py"]
+    scripts = [
+        "generate_checklisten.py",
+        "generate_uebersicht.py",
+        "generate_kalender.py",
+        "generate_formulare.py",
+        "generate_arbeitgeber_mappe.py",
+        "generate_partnerschulen_bericht.py",
+        "generate_qualitaet_bericht.py",
+    ]
 
     if args.alle_scripts:
         print(f"\n  Starte alle Workflow-Scripts mit {len(df)} Kandidaten...\n")
@@ -289,11 +296,9 @@ def main():
             if result.returncode != 0:
                 print(f"  ⚠ {script} mit Fehler beendet")
     else:
-        print(f"\n  Daten geladen. Nächster Schritt:")
-        print(f"  → python check_foerderung.py {tmp_csv.name}")
-        print(f"  → python generate_checklisten.py {tmp_csv.name}")
-        print(f"  → python generate_uebersicht.py {tmp_csv.name}")
-        print(f"  → python generate_kalender.py {tmp_csv.name}")
+        print(f"\n  Daten geladen. Nächste Schritte:")
+        for script in scripts:
+            print(f"  → python {script} {tmp_csv.name}")
         print(f"\n  Oder alles auf einmal:")
         print(f"  → python google_sheets_sync.py --sheet-id {args.sheet_id} --alle-scripts")
 
