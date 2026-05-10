@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Ausfüllhilfe {{ formular_nr }} – {{ kandidat.name }}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; background: #f5f5f5; padding: 20px; }
+    .page { max-width: 800px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); overflow: hidden; }
+
+    .header { background: linear-gradient(135deg, #1b4332, #2d6a4f); color: #fff; padding: 24px 32px; }
+    .header h1 { font-size: 18px; margin-bottom: 4px; }
+    .header .untertitel { font-size: 12px; opacity: 0.85; }
+
+    .hinweis-banner {
+      background: #fff3cd; border-left: 5px solid #ffc107;
+      padding: 14px 24px; font-size: 12px; color: #664d03;
+    }
+    .hinweis-banner strong { font-size: 13px; }
+
+    .meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid #e0e0e0; }
+    .meta-item { padding: 12px 18px; border-right: 1px solid #e0e0e0; }
+    .meta-item:last-child { border-right: none; }
+    .meta-label { font-size: 10px; text-transform: uppercase; color: #888; letter-spacing: 0.4px; }
+    .meta-value { font-size: 13px; font-weight: 600; color: #1b4332; margin-top: 2px; }
+
+    .content { padding: 24px 32px; }
+
+    .formular-titel {
+      background: #1b4332; color: #fff;
+      padding: 12px 18px; border-radius: 6px;
+      font-size: 14px; font-weight: 700; margin-bottom: 18px;
+    }
+
+    .abschnitt { margin-bottom: 20px; }
+    .abschnitt-titel {
+      background: #d8f3dc; color: #1b4332;
+      font-weight: 700; font-size: 12px; padding: 8px 14px;
+      border-radius: 4px 4px 0 0; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .felder-tabelle { width: 100%; border-collapse: collapse; border: 1px solid #d8f3dc; border-top: none; border-radius: 0 0 4px 4px; overflow: hidden; }
+    .felder-tabelle tr:nth-child(even) td { background: #f8fffe; }
+    .feld-label {
+      width: 40%; padding: 9px 14px; color: #555; font-size: 12px;
+      border-bottom: 1px solid #eee; border-right: 1px solid #eee;
+      vertical-align: top; font-weight: 500;
+    }
+    .feld-wert {
+      padding: 9px 14px; font-size: 13px; font-weight: 600;
+      border-bottom: 1px solid #eee; vertical-align: top;
+    }
+    .feld-wert.vorausgefuellt { color: #1b4332; }
+    .feld-wert.manuell { color: #856404; font-weight: 400; font-style: italic; }
+    tr:last-child td { border-bottom: none; }
+
+    .legende {
+      margin: 20px 0 0; padding: 14px 16px;
+      background: #f0fdf4; border: 1px solid #d8f3dc; border-radius: 6px;
+      font-size: 12px;
+    }
+    .legende-titel { font-weight: 700; margin-bottom: 8px; color: #1b4332; }
+    .legende-item { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .leg-box { width: 14px; height: 14px; border-radius: 2px; flex-shrink: 0; }
+    .leg-gruen { background: #1b4332; }
+    .leg-gelb { background: #856404; }
+
+    .workflow-box {
+      margin-top: 20px; padding: 14px 16px;
+      background: #e3f0fb; border: 1px solid #b8d9f5; border-radius: 6px; font-size: 12px;
+    }
+    .workflow-titel { font-weight: 700; color: #0d3b66; margin-bottom: 8px; }
+    .workflow-schritt { padding: 3px 0; color: #333; }
+    .workflow-schritt::before { content: "→ "; color: #1a6b9e; font-weight: 700; }
+
+    .footer { border-top: 1px solid #e0e0e0; padding: 12px 32px; font-size: 11px; color: #999; display: flex; justify-content: space-between; }
+
+    @media print { body { background: white; padding: 0; } .page { box-shadow: none; border-radius: 0; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <h1>Ausfüllhilfe BAMF Formular {{ formular_nr }}</h1>
+    <div class="untertitel">{{ kandidat.name }} | Erstellt am {{ datum }} | Conveni Personalvermittlung</div>
+  </div>
+
+  <div class="hinweis-banner">
+    <strong>Wichtiger Hinweis:</strong> Dies ist eine Ausfüllhilfe – kein offizielles BAMF-Formular.
+    Das offizielle Formular {{ formular_nr }} beim BAMF-Kursträger anfordern oder unter
+    <strong>bamf.de</strong> herunterladen, mit diesen Daten ausfüllen und unterschreiben.
+    Grün hinterlegte Felder sind vorausgefüllt | Gelb = manuell ausfüllen.
+  </div>
+
+  <div class="meta-grid">
+    <div class="meta-item">
+      <div class="meta-label">Kandidat</div>
+      <div class="meta-value">{{ kandidat.name }}</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Formular</div>
+      <div class="meta-value">BAMF {{ formular_nr }}</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Aufenthaltstitel</div>
+      <div class="meta-value" style="font-size:11px;">{{ kandidat.aufenthaltstitel }}</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div class="formular-titel">{{ formular_titel }}</div>
+
+    {% for abschnitt in abschnitte %}
+    <div class="abschnitt">
+      <div class="abschnitt-titel">{{ abschnitt.titel }}</div>
+      <table class="felder-tabelle">
+        {% for label, wert in abschnitt.felder %}
+        <tr>
+          <td class="feld-label">{{ label }}</td>
+          <td class="feld-wert {% if wert.startswith('→') %}manuell{% else %}vorausgefuellt{% endif %}">
+            {{ wert }}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+    {% endfor %}
+
+    <div class="legende">
+      <div class="legende-titel">Legende</div>
+      <div class="legende-item">
+        <div class="leg-box leg-gruen"></div>
+        <span><strong>Vorausgefüllt</strong> – direkt aus deinen Kandidatendaten übernehmen</span>
+      </div>
+      <div class="legende-item">
+        <div class="leg-box leg-gelb"></div>
+        <span><strong>Manuell ausfüllen</strong> (→) – muss vor Ort oder beim Kursträger ergänzt werden</span>
+      </div>
+    </div>
+
+    <div class="workflow-box">
+      <div class="workflow-titel">Nächste Schritte nach dem Ausfüllen</div>
+      <div class="workflow-schritt">Offizielles Formular {{ formular_nr }} beim Kursträger anfordern oder unter bamf.de herunterladen</div>
+      <div class="workflow-schritt">Formular mit diesen Daten ausfüllen (Kopie dieser Ausfüllhilfe daneben legen)</div>
+      {% if '600' in formular_nr %}
+      <div class="workflow-schritt">Arbeitgeberbestätigung der Pflegeeinrichtung beifügen (mit Firmenstempel)</div>
+      {% elif formular_nr == '540' %}
+      <div class="workflow-schritt">Arbeitgeberbestätigung beifügen (mit Firmenstempel und Unterschrift)</div>
+      {% endif %}
+      <div class="workflow-schritt">Reisepass-Kopie (alle Seiten) und Aufenthaltstitel-Kopie beilegen</div>
+      <div class="workflow-schritt">Einstufungstest beim Kursträger absolvieren</div>
+      <div class="workflow-schritt">Unterlagen beim Kursträger einreichen – BAMF-Servicenummer: 0800 8 67467</div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <span>Conveni Personalvermittlung | Ausfüllhilfe BAMF Formular {{ formular_nr }}</span>
+    <span>{{ datum }}</span>
+  </div>
+</div>
+</body>
+</html>

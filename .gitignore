@@ -1,3 +1,5 @@
 __pycache__/
 *.py[cod]
 workflow/output/
+workflow/credentials.json
+workflow/_sheets_export_tmp.csv
