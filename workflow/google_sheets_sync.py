@@ -283,6 +283,9 @@ def main():
         "generate_arbeitgeber_mappe.py",
         "generate_partnerschulen_bericht.py",
         "generate_qualitaet_bericht.py",
+        "generate_dokumente_bericht.py",
+        "generate_monatsbericht.py",
+        "fristenwächter.py",
     ]
 
     if args.alle_scripts:

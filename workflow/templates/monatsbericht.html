@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Monatsbericht {{ monat_str }} – Conveni</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; background: #f0f4f8; }
+
+    .header {
+      background: linear-gradient(135deg, #1a3a5c, #2a6496);
+      color: #fff; padding: 22px 32px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .header h1 { font-size: 20px; }
+    .header .sub { font-size: 12px; opacity: 0.8; margin-top: 3px; }
+    .main { max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
+
+    /* KPI-Reihe */
+    .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+    .kpi-card { background: #fff; border-radius: 8px; padding: 14px 16px; text-align: center;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08); border-top: 3px solid #ddd; }
+    .kpi-zahl { font-size: 30px; font-weight: 700; line-height: 1; }
+    .kpi-label { font-size: 11px; color: #666; margin-top: 4px; }
+    .kpi-sub { font-size: 10px; color: #aaa; margin-top: 2px; }
+    .k-blau   { border-top-color: #1a6b9e; } .k-blau .kpi-zahl   { color: #1a6b9e; }
+    .k-gruen  { border-top-color: #28a745; } .k-gruen .kpi-zahl  { color: #28a745; }
+    .k-orange { border-top-color: #fd7e14; } .k-orange .kpi-zahl { color: #fd7e14; }
+    .k-gold   { border-top-color: #c8860a; } .k-gold .kpi-zahl   { color: #c8860a; }
+    .k-rot    { border-top-color: #dc3545; } .k-rot .kpi-zahl    { color: #dc3545; }
+
+    .section-title {
+      font-size: 14px; font-weight: 700; color: #1a3a5c;
+      border-left: 4px solid #2a6496; padding-left: 10px;
+      margin: 22px 0 10px;
+    }
+
+    /* Zweispaltig */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+
+    .card { background: #fff; border-radius: 8px; padding: 16px 18px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08); }
+
+    /* Status-Verteilung */
+    .status-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .status-label { font-size: 11px; width: 180px; flex-shrink: 0; }
+    .status-bar-wrap { flex: 1; background: #e9ecef; border-radius: 3px; height: 14px; overflow: hidden; }
+    .status-bar { height: 14px; border-radius: 3px; }
+    .bar-grau   { background: #adb5bd; }
+    .bar-blau   { background: #1a6b9e; }
+    .bar-orange { background: #fd7e14; }
+    .bar-gruen  { background: #28a745; }
+    .bar-rot    { background: #dc3545; }
+    .status-count { font-size: 11px; font-weight: 700; width: 24px; text-align: right; }
+
+    /* Bewegungen-Liste */
+    .bewegung-item { padding: 7px 0; border-bottom: 1px solid #f0f0f0; font-size: 12px; display: flex; gap: 10px; }
+    .bewegung-item:last-child { border-bottom: none; }
+    .bew-datum { color: #888; font-size: 10px; white-space: nowrap; min-width: 40px; }
+    .bew-kandidat { font-weight: 600; min-width: 150px; }
+    .bew-status { color: #0d3b66; }
+
+    /* Kursabschlüsse */
+    .badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+    .badge-gruen  { background: #d4edda; color: #155724; }
+    .badge-rot    { background: #f8d7da; color: #721c24; }
+    .badge-grau   { background: #e9ecef; color: #495057; }
+    .badge-blau   { background: #cce5ff; color: #004085; }
+
+    /* Fördervolumen */
+    .foerder-box { background: linear-gradient(135deg, #1a3a5c, #2a6496); color: #fff;
+      border-radius: 8px; padding: 20px 24px; margin-bottom: 16px; }
+    .foerder-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 12px; }
+    .foerder-item { text-align: center; }
+    .foerder-zahl { font-size: 26px; font-weight: 700; }
+    .foerder-label { font-size: 11px; opacity: 0.8; margin-top: 3px; }
+
+    /* Programme */
+    .prog-item { display: flex; justify-content: space-between; align-items: center;
+      padding: 6px 0; border-bottom: 1px solid #f0f0f0; font-size: 12px; }
+    .prog-item:last-child { border-bottom: none; }
+    .prog-bar-mini { width: 60px; background: #e9ecef; border-radius: 3px; height: 6px; overflow: hidden; display: inline-block; vertical-align: middle; }
+    .prog-bar-fill { height: 6px; background: #1a6b9e; border-radius: 3px; }
+
+    /* Wiedervorlage */
+    .wv-item { padding: 6px 0; border-bottom: 1px dashed #eee; font-size: 12px; display: flex; gap: 10px; }
+    .wv-item:last-child { border-bottom: none; }
+    .wv-prio-hoch { color: #dc3545; font-weight: 700; }
+    .wv-prio-mittel { color: #e6a800; }
+
+    .empty-hint { color: #999; font-style: italic; font-size: 12px; padding: 10px 0; }
+
+    .footer { text-align: center; color: #999; font-size: 11px; padding: 20px 0 30px; }
+    @media print { body { background: white; } .main { padding: 10px; } }
+  </style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>Monatsbericht {{ monat_str }}</h1>
+    <div class="sub">Conveni Personalvermittlung | Erstellt am {{ datum }}</div>
+  </div>
+  <div style="color:#fff;opacity:0.9;font-size:13px;text-align:right;">
+    {{ kandidaten_gesamt }} Kandidaten gesamt<br>
+    {{ neu_diesen_monat }} neu diesen Monat
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- KPI-Reihe -->
+  <div class="kpi-row">
+    <div class="kpi-card k-blau">
+      <div class="kpi-zahl">{{ kpis.kandidaten_gesamt }}</div>
+      <div class="kpi-label">Kandidaten gesamt</div>
+      <div class="kpi-sub">{{ kpis.aktiv_in_kurs }} aktiv im Kurs</div>
+    </div>
+    <div class="kpi-card k-gruen">
+      <div class="kpi-zahl">{{ neu_diesen_monat }}</div>
+      <div class="kpi-label">Neu diesen Monat</div>
+    </div>
+    <div class="kpi-card k-orange">
+      <div class="kpi-zahl">{{ kurse_diesen_monat|length }}</div>
+      <div class="kpi-label">Kursabschlüsse</div>
+      <div class="kpi-sub">diesen Monat</div>
+    </div>
+    <div class="kpi-card k-gold">
+      <div class="kpi-zahl">
+        {% if kpis.vermittlungsquote_pct is not none %}{{ kpis.vermittlungsquote_pct }} %{% else %}–{% endif %}
+      </div>
+      <div class="kpi-label">Vermittlungsquote</div>
+      <div class="kpi-sub">{{ kpis.vermittelt }} vermittelt</div>
+    </div>
+    <div class="kpi-card k-blau">
+      <div class="kpi-zahl">{{ foerder_gesamt|int }} €</div>
+      <div class="kpi-label">Fördervolumen gesamt</div>
+      <div class="kpi-sub">BAMF + AA + ESF</div>
+    </div>
+  </div>
+
+  <!-- Fördervolumen-Box -->
+  <div class="foerder-box">
+    <div style="font-size:14px;font-weight:700;">Fördervolumen – Gesamtportfolio</div>
+    <div class="foerder-grid">
+      <div class="foerder-item">
+        <div class="foerder-zahl">{{ foerder_gesamt|int }} €</div>
+        <div class="foerder-label">Förderung gesamt (BAMF/AA/ESF)</div>
+      </div>
+      <div class="foerder-item">
+        <div class="foerder-zahl">{{ eigenanteil_gesamt|int }} €</div>
+        <div class="foerder-label">Eigenanteil Kandidaten gesamt</div>
+      </div>
+      <div class="foerder-item">
+        <div class="foerder-zahl">{{ kpis.vermittelt }}</div>
+        <div class="foerder-label">Erfolgreich vermittelt (gesamt)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+
+    <!-- Status-Bewegungen -->
+    <div class="card">
+      <div class="section-title" style="margin-top:0;">Status-Bewegungen diesen Monat ({{ status_bewegungen|length }})</div>
+      {% if status_bewegungen %}
+        {% for b in status_bewegungen[:12] %}
+        <div class="bewegung-item">
+          <span class="bew-datum">{{ b.datum_str }}</span>
+          <span class="bew-kandidat">{{ b.kandidat }}</span>
+          <span class="bew-status">→ {{ b.label }}</span>
+        </div>
+        {% endfor %}
+        {% if status_bewegungen|length > 12 %}
+        <div style="font-size:10px;color:#999;padding:6px 0;">+ {{ status_bewegungen|length - 12 }} weitere …</div>
+        {% endif %}
+      {% else %}
+        <div class="empty-hint">Keine Status-Bewegungen diesen Monat.</div>
+      {% endif %}
+    </div>
+
+    <!-- Aktuelle Status-Verteilung -->
+    <div class="card">
+      <div class="section-title" style="margin-top:0;">Workflow-Status aktuell</div>
+      {% for (label, farbe), data in status_aktuell %}
+      <div class="status-row">
+        <div class="status-label">{{ label }}</div>
+        <div class="status-bar-wrap">
+          <div class="status-bar bar-{{ farbe }}"
+               style="width:{{ [data / kandidaten_gesamt * 100, 3]|max }}%;"></div>
+        </div>
+        <div class="status-count">{{ data }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+
+  <div class="two-col">
+
+    <!-- Kursabschlüsse -->
+    <div class="card">
+      <div class="section-title" style="margin-top:0;">Kursabschlüsse diesen Monat</div>
+      {% if kurse_diesen_monat %}
+        {% for e in kurse_diesen_monat %}
+        <div class="bewegung-item">
+          <span class="bew-datum">{{ e.datum_str }}</span>
+          <span class="bew-kandidat">{{ e.kandidat }}</span>
+          <span class="badge badge-{% if e.ergebnis == 'bestanden' %}gruen{% elif e.ergebnis == 'abgebrochen' %}grau{% else %}rot{% endif %}">
+            {{ e.ergebnis }}
+          </span>
+          {% if e.niveau %}<span class="badge badge-blau">{{ e.niveau }}</span>{% endif %}
+          <span style="font-size:10px;color:#888;">{{ e.modul }}</span>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-hint">Keine Kursabschlüsse diesen Monat.</div>
+      {% endif %}
+    </div>
+
+    <!-- Förderprogramm-Verteilung -->
+    <div class="card">
+      <div class="section-title" style="margin-top:0;">Förderprogramme im Portfolio</div>
+      {% set max_prog = programme_zaehler[0][1] if programme_zaehler else 1 %}
+      {% for name, anzahl in programme_zaehler %}
+      <div class="prog-item">
+        <span>{{ name[:35] }}</span>
+        <span style="display:flex;align-items:center;gap:8px;">
+          <span class="prog-bar-mini">
+            <span class="prog-bar-fill" style="width:{{ anzahl / max_prog * 100 }}%;"></span>
+          </span>
+          <strong>{{ anzahl }}</strong>
+        </span>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+
+  <!-- Wiedervorlagen diesen Monat -->
+  {% if wv_diesen_monat %}
+  <div class="section-title">Wiedervorlagen diesen Monat ({{ wv_diesen_monat|length }})</div>
+  <div class="card" style="margin-bottom:16px;">
+    {% for wv in wv_diesen_monat %}
+    <div class="wv-item">
+      <span class="bew-datum">{{ wv.datum_str }}</span>
+      <span class="wv-prio-{{ wv.prioritaet }}">{{ wv.prioritaet.upper() }}</span>
+      <strong>{{ wv.kandidat }}</strong>
+      <span style="color:#555;">– {{ wv.beschreibung }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Nächste offene Wiedervorlagen -->
+  {% if wv_offen_naechste %}
+  <div class="section-title">Nächste offene Wiedervorlagen</div>
+  <div class="card" style="margin-bottom:16px;">
+    {% for wv in wv_offen_naechste %}
+    <div class="wv-item">
+      <span class="bew-datum">{{ wv.datum_str }}</span>
+      <strong>{{ wv.kandidat }}</strong>
+      <span style="color:#555;">– {{ wv.beschreibung }}</span>
+      <span style="font-size:10px;color:#888;">{{ wv.aktion }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+</div>
+<div class="footer">Conveni Personalvermittlung | Monatsbericht {{ monat_str }} | {{ datum }}</div>
+</body>
+</html>

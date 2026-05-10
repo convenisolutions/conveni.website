@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Fristenwächter {{ datum }} – Conveni</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; background: #f5f5f5; }
+
+    .header {
+      background: linear-gradient(135deg, #7b1f1f, #b52828);
+      color: #fff; padding: 20px 32px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .header h1 { font-size: 20px; }
+    .header .datum { font-size: 12px; opacity: 0.8; margin-top: 3px; }
+    .main { max-width: 900px; margin: 0 auto; padding: 24px 20px; }
+
+    .summary-bar {
+      display: flex; gap: 16px; margin-bottom: 24px;
+    }
+    .summary-card {
+      flex: 1; background: #fff; border-radius: 8px; padding: 16px 20px;
+      text-align: center; box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+    }
+    .summary-zahl { font-size: 36px; font-weight: 700; line-height: 1; }
+    .summary-label { font-size: 11px; color: #666; margin-top: 4px; }
+    .c-rot    { color: #dc3545; }
+    .c-gelb   { color: #e6a800; }
+    .c-grau   { color: #6c757d; }
+    .c-gesamt { color: #0d3b66; }
+
+    .section {
+      background: #fff; border-radius: 8px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+      margin-bottom: 20px; overflow: hidden;
+    }
+    .section-header {
+      padding: 12px 20px; font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-rot  .section-header { background: #fde8e8; color: #c82333; border-left: 5px solid #dc3545; }
+    .section-gelb .section-header { background: #fff8e1; color: #856404; border-left: 5px solid #ffc107; }
+    .section-grau .section-header { background: #f0f4f8; color: #495057; border-left: 5px solid #adb5bd; }
+
+    .alarm-item {
+      padding: 12px 20px; border-bottom: 1px solid #f0f0f0;
+    }
+    .alarm-item:last-child { border-bottom: none; }
+    .alarm-kandidat { font-weight: 700; font-size: 13px; }
+    .alarm-kategorie { font-size: 10px; font-weight: 700; color: #888; text-transform: uppercase; margin-left: 8px; }
+    .alarm-beschreibung { color: #333; margin-top: 4px; font-size: 12px; }
+    .alarm-aktion { color: #0d3b66; margin-top: 4px; font-size: 11px; font-weight: 600; }
+    .alarm-aktion::before { content: '→ '; }
+
+    .empty-msg { padding: 20px; color: #999; text-align: center; font-style: italic; }
+
+    .alles-ok {
+      background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px;
+      padding: 24px; text-align: center; color: #155724; font-size: 15px;
+      font-weight: 600; margin-bottom: 20px;
+    }
+
+    .cron-box {
+      background: #fff; border-radius: 8px; padding: 16px 20px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08); font-size: 11px; color: #666;
+    }
+    .cron-box code {
+      background: #f0f4f8; padding: 2px 8px; border-radius: 3px;
+      font-family: monospace; font-size: 11px;
+    }
+
+    .footer { text-align: center; color: #999; font-size: 11px; padding: 20px 0 30px; }
+    @media print { body { background: white; } }
+  </style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>🔔 Fristenwächter</h1>
+    <div class="datum">Conveni Personalvermittlung | {{ datum }}</div>
+  </div>
+  <div style="text-align:right;opacity:0.9;font-size:13px;">
+    {{ gesamt }} Einträge gesamt<br>
+    <span style="font-size:20px;font-weight:700;">{{ rot|length }} kritisch</span>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="summary-bar">
+    <div class="summary-card">
+      <div class="summary-zahl c-gesamt">{{ gesamt }}</div>
+      <div class="summary-label">Einträge gesamt</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-zahl c-rot">{{ rot|length }}</div>
+      <div class="summary-label">Sofortiger Handlungsbedarf</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-zahl c-gelb">{{ gelb|length }}</div>
+      <div class="summary-label">Bald fällig</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-zahl c-grau">{{ grau|length }}</div>
+      <div class="summary-label">Hinweise</div>
+    </div>
+  </div>
+
+  {% if gesamt == 0 %}
+  <div class="alles-ok">✅ Alles im grünen Bereich – keine Fristen fällig!</div>
+  {% endif %}
+
+  {% if rot %}
+  <div class="section section-rot">
+    <div class="section-header">🔴 Sofortiger Handlungsbedarf ({{ rot|length }})</div>
+    {% for a in rot %}
+    <div class="alarm-item">
+      <span class="alarm-kandidat">{{ a.kandidat }}</span>
+      <span class="alarm-kategorie">{{ a.kategorie }}</span>
+      <div class="alarm-beschreibung">{{ a.beschreibung }}</div>
+      {% if a.aktion %}<div class="alarm-aktion">{{ a.aktion }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if gelb %}
+  <div class="section section-gelb">
+    <div class="section-header">🟡 Bald fällig ({{ gelb|length }})</div>
+    {% for a in gelb %}
+    <div class="alarm-item">
+      <span class="alarm-kandidat">{{ a.kandidat }}</span>
+      <span class="alarm-kategorie">{{ a.kategorie }}</span>
+      <div class="alarm-beschreibung">{{ a.beschreibung }}</div>
+      {% if a.aktion %}<div class="alarm-aktion">{{ a.aktion }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if grau %}
+  <div class="section section-grau">
+    <div class="section-header">ℹ Hinweise ({{ grau|length }})</div>
+    {% for a in grau %}
+    <div class="alarm-item">
+      <span class="alarm-kandidat">{{ a.kandidat }}</span>
+      <span class="alarm-kategorie">{{ a.kategorie }}</span>
+      <div class="alarm-beschreibung">{{ a.beschreibung }}</div>
+      {% if a.aktion %}<div class="alarm-aktion">{{ a.aktion }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="cron-box">
+    <strong>Tägliche Automatisierung:</strong><br>
+    Linux/Mac crontab: <code>0 8 * * * cd /path/to/workflow && python fristenwächter.py --html</code><br>
+    Windows Aufgabenplanung: täglich 08:00 →
+    <code>python fristenwächter.py --html</code>
+  </div>
+
+</div>
+<div class="footer">Conveni Personalvermittlung | Fristenwächter | {{ datum }}</div>
+</body>
+</html>

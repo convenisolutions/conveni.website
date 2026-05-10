@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Dokumenten-Übersicht – Conveni</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; background: #f0f4f8; }
+
+    .header {
+      background: linear-gradient(135deg, #4a235a, #7d3c98);
+      color: #fff; padding: 22px 32px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .header h1 { font-size: 20px; }
+    .header .datum { font-size: 12px; opacity: 0.8; margin-top: 3px; }
+    .main { max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
+
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+    .stat-card { background: #fff; border-radius: 8px; padding: 16px 20px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08); text-align: center; }
+    .stat-zahl { font-size: 34px; font-weight: 700; line-height: 1; }
+    .stat-label { font-size: 11px; color: #666; margin-top: 4px; }
+    .c-lila  { color: #7d3c98; }
+    .c-gruen { color: #28a745; }
+    .c-rot   { color: #dc3545; }
+    .c-blau  { color: #1a6b9e; }
+
+    .section-title {
+      font-size: 14px; font-weight: 700; color: #4a235a;
+      border-left: 4px solid #7d3c98; padding-left: 10px;
+      margin: 22px 0 10px;
+    }
+
+    /* Kandidaten-Kacheln */
+    .kandidaten-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 24px; }
+    .kandidat-card {
+      background: #fff; border-radius: 8px; padding: 14px 16px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+      border-left: 5px solid #e9ecef;
+    }
+    .kandidat-card.vollst-100 { border-left-color: #28a745; }
+    .kandidat-card.vollst-hoch { border-left-color: #1a6b9e; }
+    .kandidat-card.vollst-mittel { border-left-color: #ffc107; }
+    .kandidat-card.vollst-kritisch { border-left-color: #dc3545; }
+
+    .kandidat-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .kandidat-name { font-weight: 700; font-size: 13px; }
+    .vollst-badge { font-size: 12px; font-weight: 700; }
+
+    .progress-wrap { background: #e9ecef; border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 8px; }
+    .progress-fill { height: 8px; border-radius: 4px; }
+    .fill-100    { background: #28a745; }
+    .fill-hoch   { background: #1a6b9e; }
+    .fill-mittel { background: #ffc107; }
+    .fill-kritisch { background: #dc3545; }
+
+    .fehlend-liste { font-size: 11px; color: #dc3545; }
+    .fehlend-item { display: flex; gap: 6px; margin-top: 3px; }
+    .fehlend-item::before { content: '✗ '; font-weight: 700; }
+
+    .angefordert-item { font-size: 10px; color: #e6a800; margin-top: 3px; }
+    .angefordert-item::before { content: '⟳ '; }
+
+    /* Detail-Tabelle */
+    .table-wrap { background: #fff; border-radius: 8px; overflow: hidden;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08); margin-bottom: 24px; }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #4a235a; color: #fff; padding: 9px 12px; text-align: left;
+      font-size: 11px; font-weight: 600; white-space: nowrap; }
+    td { padding: 7px 12px; border-bottom: 1px solid #eee; font-size: 11px; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fdf5ff; }
+
+    .badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+    .badge-gruen  { background: #d4edda; color: #155724; }
+    .badge-rot    { background: #f8d7da; color: #721c24; }
+    .badge-orange { background: #ffe8cc; color: #7d4000; }
+    .badge-grau   { background: #e9ecef; color: #495057; }
+
+    .footer { text-align: center; color: #999; font-size: 11px; padding: 20px 0 30px; }
+    @media print { body { background: white; } .main { padding: 10px; } }
+  </style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>Dokumenten-Übersicht</h1>
+    <div class="datum">Conveni Personalvermittlung | Stand: {{ datum }}</div>
+  </div>
+  <div style="color:#fff;opacity:0.9;font-size:13px;text-align:right;">
+    ✱ = Pflicht-Dokument<br>
+    <code style="font-size:11px;opacity:0.8;">python dokumente_manager.py --setze "Name" reisepass vorhanden</code>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- Statistiken -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-zahl c-lila">{{ statistik.gesamt }}</div>
+      <div class="stat-label">Kandidaten gesamt</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-zahl c-gruen">{{ statistik.vollstaendig }}</div>
+      <div class="stat-label">Vollständig (100 %)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-zahl c-rot">{{ statistik.kritisch }}</div>
+      <div class="stat-label">Kritisch (&lt; 50 %)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-zahl c-blau">{{ statistik.avg_vollstaendigkeit }} %</div>
+      <div class="stat-label">⌀ Vollständigkeit</div>
+    </div>
+  </div>
+
+  <!-- Kandidaten-Kacheln (sortiert nach Vollständigkeit aufsteigend) -->
+  <div class="section-title">Alle Kandidaten – Vollständigkeits-Übersicht</div>
+  <div class="kandidaten-grid">
+    {% for k in kandidaten %}
+    {% set vollst = k.vollstaendigkeit %}
+    {% if vollst == 100 %}{% set klasse = "vollst-100" %}{% set fill_klasse = "fill-100" %}
+    {% elif vollst >= 70 %}{% set klasse = "vollst-hoch" %}{% set fill_klasse = "fill-hoch" %}
+    {% elif vollst >= 40 %}{% set klasse = "vollst-mittel" %}{% set fill_klasse = "fill-mittel" %}
+    {% else %}{% set klasse = "vollst-kritisch" %}{% set fill_klasse = "fill-kritisch" %}{% endif %}
+
+    <div class="kandidat-card {{ klasse }}">
+      <div class="kandidat-header">
+        <div class="kandidat-name">{{ k.name }}</div>
+        <div class="vollst-badge">{{ vollst }} %</div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-fill {{ fill_klasse }}" style="width:{{ vollst }}%;"></div>
+      </div>
+      <div class="fehlend-liste">
+        {% for f in k.fehlende_pflicht[:4] %}
+        <div class="fehlend-item">{{ f.label }}</div>
+        {% endfor %}
+        {% if k.fehlende_pflicht|length > 4 %}
+        <div style="font-size:10px;color:#dc3545;">+ {{ k.fehlende_pflicht|length - 4 }} weitere …</div>
+        {% endif %}
+      </div>
+      {% for a in k.angefordert %}
+      <div class="angefordert-item">{{ a.label }}{% if a.notiz %} ({{ a.notiz }}){% endif %}</div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Detailtabelle alle Dokumente -->
+  <div class="section-title">Detailansicht – alle Dokumenttypen</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Kandidat</th>
+          {% for typ, meta in dokument_typen.items() %}
+          <th title="{{ meta.label }}" style="writing-mode:vertical-lr;transform:rotate(180deg);padding:14px 6px;min-width:28px;">
+            {{ '✱' if meta.pflicht else '' }} {{ meta.label[:20] }}
+          </th>
+          {% endfor %}
+          <th>Vollst.</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for k in kandidaten|sort(attribute='name') %}
+        <tr>
+          <td style="font-weight:600;white-space:nowrap;">{{ k.name }}</td>
+          {% for typ in dokument_typen %}
+            {% set dok = k.dokumente.get(typ, {'status': 'fehlend'}) %}
+            <td style="text-align:center;">
+              {% if dok.status == 'vorhanden' %}
+                <span style="color:#28a745;font-size:14px;" title="Vorhanden">✓</span>
+              {% elif dok.status == 'angefordert' %}
+                <span style="color:#e6a800;font-size:14px;" title="{{ dok.notiz or 'Angefordert' }}">⟳</span>
+              {% elif dok.status == 'nicht_relevant' %}
+                <span style="color:#dee2e6;font-size:14px;" title="Nicht relevant">–</span>
+              {% else %}
+                <span style="color:#dc3545;font-size:14px;" title="Fehlend">✗</span>
+              {% endif %}
+            </td>
+          {% endfor %}
+          <td style="text-align:right;font-weight:700;">{{ k.vollstaendigkeit }} %</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Legende -->
+  <div style="background:#fff;border-radius:8px;padding:14px 20px;box-shadow:0 1px 6px rgba(0,0,0,0.08);font-size:11px;color:#555;">
+    <strong>Legende:</strong>
+    <span style="color:#28a745;font-size:14px;">✓</span> Vorhanden &nbsp;
+    <span style="color:#e6a800;font-size:14px;">⟳</span> Angefordert &nbsp;
+    <span style="color:#dc3545;font-size:14px;">✗</span> Fehlend &nbsp;
+    <span style="color:#dee2e6;font-size:14px;">–</span> Nicht relevant &nbsp;&nbsp;|&nbsp;&nbsp;
+    ✱ = Pflicht-Dokument
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <strong>Status setzen:</strong>
+    <code style="background:#f0f4f8;padding:2px 6px;border-radius:3px;">
+      python dokumente_manager.py --setze "Name" reisepass vorhanden
+    </code>
+  </div>
+
+</div>
+<div class="footer">Conveni Personalvermittlung | Dokumenten-Übersicht | {{ datum }}</div>
+</body>
+</html>

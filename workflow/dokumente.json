@@ -1,0 +1,530 @@
+{
+  "thi_lan_nguyen": {
+    "name": "Thi Lan Nguyen",
+    "zuletzt_geaendert": "2026-05-10",
+    "dokumente": {
+      "reisepass": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "aufenthaltstitel": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "meldebescheinigung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "lichtbild": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "lebenslauf": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "qualifikationsnachweis": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "krankenversicherung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "ab_bestaetigung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "bamf_antrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "einstufungstest": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "anerkennung_antrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "arbeitsvertrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      }
+    }
+  },
+  "maria_santos": {
+    "name": "Maria Santos",
+    "zuletzt_geaendert": "2026-05-10",
+    "dokumente": {
+      "reisepass": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "aufenthaltstitel": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "meldebescheinigung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "lichtbild": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "lebenslauf": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "qualifikationsnachweis": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "krankenversicherung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "ab_bestaetigung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "bamf_antrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "einstufungstest": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "anerkennung_antrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "arbeitsvertrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      }
+    }
+  },
+  "jose_reyes": {
+    "name": "Jose Reyes",
+    "zuletzt_geaendert": "2026-05-10",
+    "dokumente": {
+      "reisepass": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "aufenthaltstitel": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "meldebescheinigung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "lichtbild": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "lebenslauf": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "qualifikationsnachweis": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "krankenversicherung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "ab_bestaetigung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "bamf_antrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "einstufungstest": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "anerkennung_antrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "arbeitsvertrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      }
+    }
+  },
+  "van_minh_tran": {
+    "name": "Van Minh Tran",
+    "zuletzt_geaendert": "2026-05-10",
+    "dokumente": {
+      "reisepass": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "aufenthaltstitel": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "meldebescheinigung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "lichtbild": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "lebenslauf": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "qualifikationsnachweis": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "krankenversicherung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "ab_bestaetigung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "bamf_antrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "einstufungstest": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "anerkennung_antrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "arbeitsvertrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      }
+    }
+  },
+  "ana_dela_cruz": {
+    "name": "Ana Dela Cruz",
+    "zuletzt_geaendert": "2026-05-10",
+    "dokumente": {
+      "reisepass": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "aufenthaltstitel": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "meldebescheinigung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "lichtbild": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "lebenslauf": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "qualifikationsnachweis": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "krankenversicherung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "ab_bestaetigung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "bamf_antrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "einstufungstest": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "anerkennung_antrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "arbeitsvertrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      }
+    }
+  },
+  "thi_huong_pham": {
+    "name": "Thi Huong Pham",
+    "zuletzt_geaendert": "2026-05-10",
+    "dokumente": {
+      "reisepass": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "aufenthaltstitel": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "meldebescheinigung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "lichtbild": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "lebenslauf": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "qualifikationsnachweis": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "krankenversicherung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "ab_bestaetigung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "bamf_antrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "einstufungstest": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "anerkennung_antrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "arbeitsvertrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      }
+    }
+  },
+  "ramon_garcia": {
+    "name": "Ramon Garcia",
+    "zuletzt_geaendert": "2026-05-10",
+    "dokumente": {
+      "reisepass": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "aufenthaltstitel": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "meldebescheinigung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "lichtbild": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "lebenslauf": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "qualifikationsnachweis": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "krankenversicherung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "ab_bestaetigung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "bamf_antrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "einstufungstest": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "anerkennung_antrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "arbeitsvertrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      }
+    }
+  },
+  "thi_thu_le": {
+    "name": "Thi Thu Le",
+    "zuletzt_geaendert": "2026-05-10",
+    "dokumente": {
+      "reisepass": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "aufenthaltstitel": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "meldebescheinigung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "lichtbild": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "lebenslauf": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "qualifikationsnachweis": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "krankenversicherung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "ab_bestaetigung": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "bamf_antrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "einstufungstest": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "anerkennung_antrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      },
+      "arbeitsvertrag": {
+        "status": "fehlend",
+        "notiz": "",
+        "datum": ""
+      }
+    }
+  }
+}
