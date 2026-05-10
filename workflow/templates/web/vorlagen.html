@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block title %}Vorlagen{% endblock %}
+
+{% block content %}
+<style>
+  .vorlage-layout { display:grid; grid-template-columns:320px 1fr; gap:16px; align-items:start; }
+  .vorlage-form { display:flex; flex-direction:column; gap:12px; }
+  .form-group { display:flex; flex-direction:column; gap:4px; }
+
+  .vorlage-output {
+    background:#fff; border-radius:10px; padding:20px;
+    box-shadow:0 1px 6px rgba(0,0,0,0.08); min-height:400px;
+  }
+  .vorlage-text {
+    white-space:pre-wrap; font-family:'Courier New', monospace; font-size:12px;
+    line-height:1.6; color:#222; background:#f8f9fa; padding:16px;
+    border-radius:6px; max-height:580px; overflow-y:auto;
+    border:1px solid #dee2e6;
+  }
+  .copy-btn {
+    margin-top:10px; padding:8px 16px; background:#1a6b9e; color:#fff;
+    border:none; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer;
+  }
+  .copy-btn:hover { background:#155a8a; }
+
+  optgroup { font-weight:700; font-size:11px; }
+  .vorlage-kanal {
+    display:inline-block; padding:2px 7px; border-radius:10px; font-size:10px;
+    font-weight:600; margin-left:6px;
+  }
+  .kanal-email { background:#cce5ff; color:#004085; }
+  .kanal-wa    { background:#d4edda; color:#155724; }
+</style>
+
+<h2 style="font-size:18px;color:#0d3b66;margin-bottom:16px;">
+  Kommunikationsvorlagen – E-Mail &amp; WhatsApp
+</h2>
+
+<div class="vorlage-layout">
+
+  <!-- Formular -->
+  <div class="card vorlage-form">
+    <div class="card-title">Parameter</div>
+
+    <div class="form-group">
+      <label>Vorlage</label>
+      <select id="vorlageSelect" onchange="vorlageGewaehlt()">
+        <optgroup label="── E-Mail Kandidat ──">
+          {% for key, meta in vorlagen.items() if meta.empfaenger == 'Kandidat' and meta.kanal == 'E-Mail' %}
+          <option value="{{ key }}" data-kanal="{{ meta.kanal }}">{{ meta.label }}</option>
+          {% endfor %}
+        </optgroup>
+        <optgroup label="── WhatsApp ──">
+          {% for key, meta in vorlagen.items() if meta.kanal == 'WhatsApp' %}
+          <option value="{{ key }}" data-kanal="WhatsApp">{{ meta.label }}</option>
+          {% endfor %}
+        </optgroup>
+        <optgroup label="── E-Mail Arbeitgeber ──">
+          {% for key, meta in vorlagen.items() if meta.empfaenger == 'Arbeitgeber' %}
+          <option value="{{ key }}" data-kanal="{{ meta.kanal }}">{{ meta.label }}</option>
+          {% endfor %}
+        </optgroup>
+        <optgroup label="── Kursträger ──">
+          {% for key, meta in vorlagen.items() if meta.empfaenger == 'Kursträger' %}
+          <option value="{{ key }}" data-kanal="{{ meta.kanal }}">{{ meta.label }}</option>
+          {% endfor %}
+        </optgroup>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Kandidat</label>
+      <select id="kandidatSelect">
+        <option value="">[Kandidat wählen]</option>
+        {% for k in kandidaten %}
+        <option value="{{ k.name }}">{{ k.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group" id="kursträgerGruppe">
+      <label>Kursträger</label>
+      <input type="text" id="kursträgerInput" placeholder="z.B. VHS München" value="[Kursträger]">
+    </div>
+
+    <div class="form-group" id="datumGruppe">
+      <label>Datum / Kursbeginn</label>
+      <input type="text" id="datumInput" placeholder="z.B. 01.06.2026" value="[Datum]">
+    </div>
+
+    <div class="form-group" id="tageGruppe" style="display:none;">
+      <label>Tage bis AT-Ablauf</label>
+      <input type="text" id="tageInput" placeholder="z.B. 28">
+    </div>
+
+    <button class="btn btn-primary" onclick="generiereVorlage()" style="margin-top:4px;">
+      Vorlage generieren
+    </button>
+  </div>
+
+  <!-- Output -->
+  <div class="vorlage-output">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div>
+        <span id="vorlageKanal" class="vorlage-kanal kanal-email">E-Mail</span>
+        <strong id="vorlageTitel" style="font-size:13px;margin-left:8px;">Vorlage wählen →</strong>
+      </div>
+      <button class="copy-btn" onclick="kopieren()" id="copyBtn" style="display:none;">
+        📋 Text kopieren
+      </button>
+    </div>
+    <div class="vorlage-text" id="vorlageText">
+Wähle links eine Vorlage und klicke auf „Vorlage generieren".
+
+Die Texte werden automatisch mit den Kandidatendaten befüllt.
+Platzhalter in [eckigen Klammern] bitte manuell ersetzen.
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const VORLAGEN_META = {
+  {% for key, meta in vorlagen.items() %}
+  "{{ key }}": {"kanal": "{{ meta.kanal }}", "label": "{{ meta.label }}"},
+  {% endfor %}
+};
+
+function vorlageGewaehlt() {
+  const key = document.getElementById('vorlageSelect').value;
+  const meta = VORLAGEN_META[key] || {};
+  const tageGruppe = document.getElementById('tageGruppe');
+  tageGruppe.style.display = key.includes('at_') || key.includes('ablauf') ? 'flex' : 'none';
+}
+
+async function generiereVorlage() {
+  const key       = document.getElementById('vorlageSelect').value;
+  const kandidat  = document.getElementById('kandidatSelect').value;
+  const kursträger = document.getElementById('kursträgerInput').value;
+  const datum     = document.getElementById('datumInput').value;
+  const tage      = document.getElementById('tageInput').value;
+
+  const meta = VORLAGEN_META[key] || {};
+
+  document.getElementById('vorlageText').textContent = 'Wird generiert …';
+
+  const data = await apiPost('/api/vorlage', {
+    vorlage: key, kandidat, kursträger, datum,
+    tage: tage ? parseInt(tage) : null,
+  });
+
+  document.getElementById('vorlageText').textContent = data.text;
+
+  const kanal = meta.kanal || 'E-Mail';
+  const kanalEl = document.getElementById('vorlageKanal');
+  kanalEl.textContent = kanal;
+  kanalEl.className = 'vorlage-kanal ' + (kanal === 'WhatsApp' ? 'kanal-wa' : 'kanal-email');
+
+  document.getElementById('vorlageTitel').textContent = meta.label || '';
+  document.getElementById('copyBtn').style.display = 'inline-block';
+}
+
+function kopieren() {
+  const text = document.getElementById('vorlageText').textContent;
+  navigator.clipboard.writeText(text).then(() => showToast('📋 Text kopiert!'));
+}
+
+vorlageGewaehlt();
+</script>
+{% endblock %}

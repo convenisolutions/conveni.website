@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Dokumente{% endblock %}
+
+{% block content %}
+<style>
+  .dok-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:14px; }
+  .dok-card { background:#fff; border-radius:10px; padding:16px 18px;
+    box-shadow:0 1px 6px rgba(0,0,0,0.08); border-left:5px solid #dee2e6; }
+  .dok-card.pct-100 { border-left-color:#28a745; }
+  .dok-card.pct-hoch { border-left-color:#1a6b9e; }
+  .dok-card.pct-mittel { border-left-color:#ffc107; }
+  .dok-card.pct-niedrig { border-left-color:#dc3545; }
+
+  .dok-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .dok-name { font-weight:700; font-size:13px; }
+  .dok-pct { font-size:13px; font-weight:700; }
+
+  .dok-item { display:flex; align-items:center; gap:8px; padding:5px 0;
+    border-bottom:1px dashed #f0f0f0; font-size:12px; }
+  .dok-item:last-child { border-bottom:none; }
+  .dok-check { width:18px; height:18px; accent-color:#28a745; cursor:pointer; flex-shrink:0; }
+  .dok-label { flex:1; }
+  .dok-pflicht { color:#dc3545; font-size:10px; margin-left:2px; }
+  .dok-status { font-size:10px; font-weight:600; min-width:70px; text-align:right; }
+  .st-vorhanden { color:#28a745; }
+  .st-fehlend { color:#dc3545; }
+  .st-angefordert { color:#e6a800; }
+
+  .filter-bar { display:flex; gap:10px; margin-bottom:16px; }
+  .filter-bar input { flex:1; }
+</style>
+
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+  <h2 style="font-size:18px;color:#0d3b66;">Dokumenten-Tracking</h2>
+  <div style="font-size:12px;color:#888;">
+    ✱ = Pflicht-Dokument &nbsp;|&nbsp;
+    Klick auf Checkbox = vorhanden / fehlend umschalten
+  </div>
+</div>
+
+<div class="filter-bar">
+  <input type="text" id="filterDok" placeholder="Kandidat suchen …" oninput="filterKarten()">
+</div>
+
+<div class="dok-grid" id="dokGrid">
+  {% for k in kandidaten %}
+  {% set pct = k.vollstaendigkeit %}
+  {% if pct == 100 %}{% set cls = 'pct-100' %}{% set farbe = '28a745' %}
+  {% elif pct >= 70 %}{% set cls = 'pct-hoch' %}{% set farbe = '1a6b9e' %}
+  {% elif pct >= 40 %}{% set cls = 'pct-mittel' %}{% set farbe = 'ffc107' %}
+  {% else %}{% set cls = 'pct-niedrig' %}{% set farbe = 'dc3545' %}{% endif %}
+
+  <div class="dok-card {{ cls }}" data-name="{{ k.name|lower }}">
+    <div class="dok-header">
+      <div class="dok-name">{{ k.name }}</div>
+      <div class="dok-pct" style="color:#{{ farbe }};" id="pct-{{ loop.index }}">
+        {{ pct }}%
+      </div>
+    </div>
+    <div class="progress" style="margin-bottom:10px;">
+      <div class="progress-bar" id="pb-{{ loop.index }}"
+           style="width:{{ pct }}%; background:#{{ farbe }};"></div>
+    </div>
+    {% for typ, meta in dokument_typen.items() %}
+    {% set dok = k.dokumente.get(typ, {'status': 'fehlend', 'notiz': ''}) %}
+    <div class="dok-item">
+      <input type="checkbox" class="dok-check"
+             id="dok-{{ loop.index }}-{{ typ }}"
+             {% if dok.status == 'vorhanden' %}checked{% endif %}
+             onchange="toggleDokument('{{ k.name }}', '{{ typ }}', this, {{ loop.index }})">
+      <label class="dok-label" for="dok-{{ loop.index }}-{{ typ }}" style="cursor:pointer;margin:0;">
+        {{ meta.label }}{% if meta.pflicht %}<span class="dok-pflicht">✱</span>{% endif %}
+      </label>
+      <span class="dok-status st-{{ dok.status }}">
+        {% if dok.status == 'vorhanden' %}✓ Vorhanden
+        {% elif dok.status == 'angefordert' %}⟳ Angefordert
+        {% else %}✗ Fehlend{% endif %}
+      </span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function toggleDokument(name, typ, checkbox, idx) {
+  const status = checkbox.checked ? 'vorhanden' : 'fehlend';
+  const data = await apiPost('/api/dokument', {name, typ, status});
+
+  if (data.ok) {
+    // Vollständigkeit-Anzeige updaten
+    const pctEl = document.getElementById(`pct-${idx}`);
+    const pbEl  = document.getElementById(`pb-${idx}`);
+    if (pctEl) pctEl.textContent = data.vollstaendigkeit + '%';
+    if (pbEl)  pbEl.style.width  = data.vollstaendigkeit + '%';
+
+    // Status-Text in der Zeile updaten
+    const statusEl = checkbox.closest('.dok-item').querySelector('.dok-status');
+    if (statusEl) {
+      statusEl.className = `dok-status st-${status}`;
+      statusEl.textContent = status === 'vorhanden' ? '✓ Vorhanden' : '✗ Fehlend';
+    }
+    showToast(status === 'vorhanden' ? `✓ ${typ} als vorhanden markiert` : `${typ} als fehlend markiert`);
+  }
+}
+
+function filterKarten() {
+  const q = document.getElementById('filterDok').value.toLowerCase();
+  document.querySelectorAll('#dokGrid .dok-card').forEach(card => {
+    card.style.display = card.dataset.name.includes(q) ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}

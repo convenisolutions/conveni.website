@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Conveni{% endblock %} – Workflow</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 14px;
+           background: #f0f4f8; color: #1a1a2e; min-height: 100vh; }
+
+    /* Nav */
+    nav {
+      background: linear-gradient(135deg, #0d3b66, #1a6b9e);
+      color: #fff; padding: 0 24px;
+      display: flex; align-items: center; gap: 0;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .nav-brand {
+      font-size: 17px; font-weight: 700; padding: 14px 20px 14px 0;
+      color: #fff; text-decoration: none; border-right: 1px solid rgba(255,255,255,0.2);
+      margin-right: 8px; letter-spacing: 0.5px;
+    }
+    .nav-brand span { opacity: 0.6; font-weight: 400; font-size: 12px; margin-left: 6px; }
+    .nav-link {
+      color: rgba(255,255,255,0.8); text-decoration: none;
+      padding: 16px 14px; font-size: 13px; transition: background 0.15s;
+      border-bottom: 3px solid transparent;
+    }
+    .nav-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .nav-link.active { color: #fff; border-bottom-color: #7ecfff; background: rgba(255,255,255,0.08); }
+    .nav-spacer { flex: 1; }
+    .nav-time { font-size: 11px; opacity: 0.6; }
+
+    /* Main */
+    main { max-width: 1280px; margin: 0 auto; padding: 24px 20px; }
+
+    /* Cards */
+    .card {
+      background: #fff; border-radius: 10px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08); padding: 20px 22px;
+    }
+    .card-title {
+      font-size: 14px; font-weight: 700; color: #0d3b66;
+      border-left: 4px solid #1a6b9e; padding-left: 10px;
+      margin-bottom: 14px;
+    }
+
+    /* Badge */
+    .badge { display: inline-block; padding: 2px 9px; border-radius: 10px;
+             font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .badge-grau   { background: #e9ecef; color: #495057; }
+    .badge-blau   { background: #cce5ff; color: #004085; }
+    .badge-orange { background: #ffe8cc; color: #7d4000; }
+    .badge-gruen  { background: #d4edda; color: #155724; }
+    .badge-rot    { background: #f8d7da; color: #721c24; }
+
+    /* Progress */
+    .progress { background: #e9ecef; border-radius: 4px; height: 8px; overflow: hidden; }
+    .progress-bar { height: 8px; border-radius: 4px; transition: width 0.3s; }
+    .pb-grau   { background: #adb5bd; }
+    .pb-blau   { background: #1a6b9e; }
+    .pb-orange { background: #fd7e14; }
+    .pb-gruen  { background: #28a745; }
+    .pb-rot    { background: #dc3545; }
+
+    /* Table */
+    .table-wrap { border-radius: 8px; overflow: hidden; border: 1px solid #dee2e6; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th { background: #0d3b66; color: #fff; padding: 10px 12px;
+               text-align: left; font-size: 12px; white-space: nowrap; }
+    tbody td { padding: 9px 12px; border-bottom: 1px solid #eee;
+               font-size: 13px; vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: #f5f9ff; }
+
+    /* Button */
+    .btn {
+      display: inline-block; padding: 6px 14px; border-radius: 6px;
+      font-size: 12px; font-weight: 600; cursor: pointer; border: none;
+      text-decoration: none; transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary { background: #1a6b9e; color: #fff; }
+    .btn-gruen   { background: #28a745; color: #fff; }
+    .btn-grau    { background: #6c757d; color: #fff; }
+    .btn-sm      { padding: 3px 9px; font-size: 11px; }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: #1b4f3a; color: #fff; padding: 12px 20px;
+      border-radius: 8px; font-size: 13px; font-weight: 600;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999;
+    }
+    #toast.show { opacity: 1; }
+
+    /* Grid */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+    /* Select */
+    select, input[type=text], textarea {
+      border: 1px solid #ced4da; border-radius: 6px; padding: 6px 10px;
+      font-size: 13px; font-family: inherit; background: #fff;
+      width: 100%; transition: border-color 0.15s;
+    }
+    select:focus, input[type=text]:focus, textarea:focus {
+      outline: none; border-color: #1a6b9e;
+      box-shadow: 0 0 0 3px rgba(26,107,158,0.15);
+    }
+    label { font-size: 12px; font-weight: 600; color: #555; display: block; margin-bottom: 4px; }
+
+    @media (max-width: 700px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="/">Conveni<span>Workflow</span></a>
+  <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">Dashboard</a>
+  <a class="nav-link {% if '/kandidaten' in request.path %}active{% endif %}" href="/kandidaten">Kandidaten</a>
+  <a class="nav-link {% if '/dokumente' in request.path %}active{% endif %}" href="/dokumente">Dokumente</a>
+  <a class="nav-link {% if '/vorlagen' in request.path %}active{% endif %}" href="/vorlagen">Vorlagen</a>
+  <a class="nav-link {% if '/berichte' in request.path %}active{% endif %}" href="/berichte">Berichte</a>
+  <div class="nav-spacer"></div>
+  <div class="nav-time" id="uhrzeit"></div>
+</nav>
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<div id="toast"></div>
+
+<script>
+  // Uhrzeit in Nav
+  function updateTime() {
+    const now = new Date();
+    document.getElementById('uhrzeit').textContent =
+      now.toLocaleDateString('de-DE') + ' ' +
+      now.toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'});
+  }
+  updateTime(); setInterval(updateTime, 30000);
+
+  // Toast-Notification
+  function showToast(msg, dauer = 2800) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), dauer);
+  }
+
+  // Generische API-POST-Funktion
+  async function apiPost(url, body) {
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(body),
+    });
+    return r.json();
+  }
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

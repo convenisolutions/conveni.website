@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<style>
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+  .kpi-card { background: #fff; border-radius: 10px; padding: 18px 20px; text-align: center;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.08); border-top: 4px solid #dee2e6; }
+  .kpi-zahl { font-size: 40px; font-weight: 700; line-height: 1; }
+  .kpi-label { font-size: 12px; color: #666; margin-top: 5px; }
+  .kpi-sub { font-size: 11px; color: #aaa; margin-top: 3px; }
+  .kc-blau   { border-top-color: #1a6b9e; } .kc-blau   .kpi-zahl { color: #1a6b9e; }
+  .kc-rot    { border-top-color: #dc3545; } .kc-rot    .kpi-zahl { color: #dc3545; }
+  .kc-gruen  { border-top-color: #28a745; } .kc-gruen  .kpi-zahl { color: #28a745; }
+  .kc-orange { border-top-color: #fd7e14; } .kc-orange .kpi-zahl { color: #fd7e14; }
+
+  .alarm-item { padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+  .alarm-item:last-child { border-bottom: none; }
+  .alarm-kandidat { font-weight: 700; }
+  .alarm-beschreibung { font-size: 12px; color: #555; margin-top: 2px; }
+  .alarm-aktion { font-size: 11px; color: #1a6b9e; font-weight: 600; margin-top: 2px; }
+
+  .ampel { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; }
+  .ampel-rot   { background: #dc3545; }
+  .ampel-gelb  { background: #ffc107; }
+  .ampel-gruen { background: #28a745; }
+
+  .quick-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+  .qa-btn {
+    display: block; padding: 12px 14px; border-radius: 8px; text-decoration: none;
+    font-size: 13px; font-weight: 600; text-align: center; border: 1.5px solid;
+    transition: background 0.15s, color 0.15s;
+  }
+  .qa-btn:hover { filter: brightness(0.92); }
+  .qa-blue   { color: #1a6b9e; border-color: #1a6b9e; }
+  .qa-blue:hover   { background: #1a6b9e; color: #fff; }
+  .qa-green  { color: #28a745; border-color: #28a745; }
+  .qa-green:hover  { background: #28a745; color: #fff; }
+  .qa-orange { color: #fd7e14; border-color: #fd7e14; }
+  .qa-orange:hover { background: #fd7e14; color: #fff; }
+</style>
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+  <div>
+    <h2 style="font-size:20px;color:#0d3b66;">Guten Morgen 👋</h2>
+    <div style="font-size:12px;color:#888;margin-top:2px;">Conveni Sprachförderungs-Workflow</div>
+  </div>
+  <a href="/berichte" class="btn btn-primary">Alle Berichte generieren →</a>
+</div>
+
+<!-- KPI-Karten -->
+<div class="kpi-grid">
+  <div class="kpi-card kc-blau">
+    <div class="kpi-zahl">{{ kandidaten|length }}</div>
+    <div class="kpi-label">Kandidaten gesamt</div>
+    <div class="kpi-sub">{{ aktiv_in_workflow }} im aktiven Workflow</div>
+  </div>
+  <div class="kpi-card kc-rot">
+    <div class="kpi-zahl">{{ fristen.rot|length }}</div>
+    <div class="kpi-label">Kritische Alarme</div>
+    <div class="kpi-sub">Sofortiger Handlungsbedarf</div>
+  </div>
+  <div class="kpi-card kc-orange">
+    <div class="kpi-zahl">{{ fristen.gelb|length }}</div>
+    <div class="kpi-label">Bald fällig</div>
+    <div class="kpi-sub">In den nächsten 30 Tagen</div>
+  </div>
+  <div class="kpi-card kc-gruen">
+    <div class="kpi-zahl">{{ vollst_avg }} %</div>
+    <div class="kpi-label">Ø Dokument-Vollständigkeit</div>
+    <div class="kpi-sub">Pflicht-Unterlagen</div>
+  </div>
+</div>
+
+<div class="grid-2" style="margin-bottom:16px;">
+
+  <!-- Alarme -->
+  <div class="card">
+    <div class="card-title">🔔 Fristenwächter heute</div>
+    {% if fristen.rot %}
+      {% for a in fristen.rot[:5] %}
+      <div class="alarm-item">
+        <div class="alarm-kandidat">
+          <span class="ampel ampel-rot"></span>{{ a.kandidat }}
+          <span style="font-size:10px;color:#888;margin-left:6px;">{{ a.kategorie }}</span>
+        </div>
+        <div class="alarm-beschreibung">{{ a.beschreibung }}</div>
+        {% if a.aktion %}<div class="alarm-aktion">→ {{ a.aktion }}</div>{% endif %}
+      </div>
+      {% endfor %}
+      {% if fristen.rot|length > 5 %}
+        <div style="font-size:11px;color:#dc3545;padding:8px 0;font-weight:600;">
+          + {{ fristen.rot|length - 5 }} weitere kritische Einträge
+        </div>
+      {% endif %}
+    {% elif fristen.gelb %}
+      {% for a in fristen.gelb[:3] %}
+      <div class="alarm-item">
+        <div class="alarm-kandidat">
+          <span class="ampel ampel-gelb"></span>{{ a.kandidat }}
+        </div>
+        <div class="alarm-beschreibung">{{ a.beschreibung }}</div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div style="color:#28a745;font-weight:600;padding:16px 0;text-align:center;">
+        ✅ Keine kritischen Fristen!
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Kandidaten-Übersicht -->
+  <div class="card">
+    <div class="card-title">👥 Kandidaten-Übersicht</div>
+    <table>
+      <tbody>
+        {% for k in kandidaten[:8] %}
+        <tr>
+          <td style="font-weight:600;">{{ k.name }}</td>
+          <td>
+            <span class="badge badge-{{ k.workflow_status.farbe }}">
+              {{ k.workflow_status.label }}
+            </span>
+          </td>
+          <td style="width:100px;">
+            <div class="progress">
+              <div class="progress-bar pb-{{ k.workflow_status.farbe }}"
+                   style="width:{{ k.workflow_status.fortschritt }}%;"></div>
+            </div>
+          </td>
+          <td style="font-size:11px;color:#888;text-align:right;">
+            {{ k.workflow_status.fortschritt }}%
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <a href="/kandidaten" style="display:block;text-align:center;margin-top:12px;font-size:12px;color:#1a6b9e;text-decoration:none;font-weight:600;">
+      Alle Kandidaten anzeigen →
+    </a>
+  </div>
+
+</div>
+
+<!-- Schnellzugriff -->
+<div class="card">
+  <div class="card-title">⚡ Schnellzugriff</div>
+  <div class="quick-actions">
+    <a href="/kandidaten" class="qa-btn qa-blue">👥 Status aktualisieren</a>
+    <a href="/dokumente"  class="qa-btn qa-blue">📄 Dokumente tracken</a>
+    <a href="/vorlagen"   class="qa-btn qa-blue">✉️ Vorlage generieren</a>
+    <a href="/berichte"   class="qa-btn qa-green">📊 Dashboard generieren</a>
+    <a href="/berichte"   class="qa-btn qa-green">📅 Kalender exportieren</a>
+    <a href="/berichte"   class="qa-btn qa-orange">🗂️ Alle Berichte neu</a>
+  </div>
+</div>
+{% endblock %}

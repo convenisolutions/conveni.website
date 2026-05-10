@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block title %}Kandidaten{% endblock %}
+
+{% block content %}
+<style>
+  .filter-bar { display:flex; gap:10px; margin-bottom:16px; align-items:center; flex-wrap:wrap; }
+  .filter-bar input, .filter-bar select { width:auto; flex:1; min-width:140px; }
+  .filter-label { font-size:12px; color:#666; white-space:nowrap; }
+
+  .status-select {
+    border: 1px solid #dee2e6; border-radius: 20px; padding: 3px 10px;
+    font-size: 11px; font-weight: 600; cursor: pointer;
+    background: #f8f9fa; max-width: 180px;
+  }
+  .status-select:focus { outline:none; border-color:#1a6b9e; }
+
+  .notiz-input {
+    border:1px solid #dee2e6; border-radius:4px; padding:2px 8px;
+    font-size:11px; width:130px;
+  }
+
+  .prog-wrap { width:80px; }
+  .prog-pct { font-size:10px; color:#888; text-align:right; margin-top:1px; }
+</style>
+
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+  <h2 style="font-size:18px;color:#0d3b66;">Kandidaten &amp; Workflow-Status</h2>
+  <span style="font-size:12px;color:#888;">{{ kandidaten|length }} Kandidaten</span>
+</div>
+
+<!-- Filter -->
+<div class="filter-bar">
+  <span class="filter-label">Filter:</span>
+  <input type="text" id="filterName" placeholder="Name suchen …" oninput="filterTabelle()">
+  <select id="filterStatus" onchange="filterTabelle()">
+    <option value="">Alle Status</option>
+    {% for key, sv in statuswerte.items() %}
+    <option value="{{ key }}">{{ sv.label }}</option>
+    {% endfor %}
+  </select>
+  <select id="filterAmpel" onchange="filterTabelle()">
+    <option value="">Alle Ampel</option>
+    <option value="rot">🔴 Dringend</option>
+    <option value="gelb">🟡 Prüfen</option>
+    <option value="gruen">🟢 OK</option>
+  </select>
+</div>
+
+<div class="table-wrap">
+  <table id="kandidatenTabelle">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Nationalität</th>
+        <th>Niveau</th>
+        <th>Berufsfeld</th>
+        <th>Ampel</th>
+        <th>Workflow-Status</th>
+        <th>Fortschritt</th>
+        <th>Notiz</th>
+        <th>Speichern</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for k in kandidaten %}
+      <tr data-name="{{ k.name }}"
+          data-status="{{ k.workflow_status.key }}"
+          data-ampel="{{ k.status_ampel }}">
+        <td>
+          <strong>{{ k.name }}</strong><br>
+          <span style="font-size:11px;color:#888;">{{ k.email }}</span>
+        </td>
+        <td>{{ k.nationalitaet }}</td>
+        <td><span class="badge badge-blau">{{ k.sprachniveau }}</span></td>
+        <td style="font-size:12px;">
+          {{ k.berufsfeld }}<br>
+          <span style="color:#888;font-size:10px;">{{ k.qualifikation_abschluss }}</span>
+        </td>
+        <td>
+          <span class="badge badge-{{ k.status_ampel }}">
+            {% if k.status_ampel == 'rot' %}Dringend
+            {% elif k.status_ampel == 'gelb' %}Prüfen
+            {% else %}OK{% endif %}
+          </span>
+        </td>
+        <td>
+          <select class="status-select"
+                  id="status-{{ loop.index }}"
+                  data-kandidat="{{ k.name }}"
+                  onchange="statusGewechselt(this)">
+            {% for key, sv in statuswerte.items() %}
+            <option value="{{ key }}"
+              {% if key == k.workflow_status.key %}selected{% endif %}>
+              {{ sv.label }}
+            </option>
+            {% endfor %}
+          </select>
+          <div id="badge-{{ loop.index }}" style="margin-top:4px;">
+            <span class="badge badge-{{ k.workflow_status.farbe }}">
+              {{ k.workflow_status.label }}
+            </span>
+          </div>
+        </td>
+        <td>
+          <div class="prog-wrap">
+            <div class="progress">
+              <div class="progress-bar pb-{{ k.workflow_status.farbe }}"
+                   id="pb-{{ loop.index }}"
+                   style="width:{{ k.workflow_status.fortschritt }}%;"></div>
+            </div>
+            <div class="prog-pct" id="pct-{{ loop.index }}">
+              {{ k.workflow_status.fortschritt }}%
+            </div>
+          </div>
+        </td>
+        <td>
+          <input class="notiz-input" type="text"
+                 id="notiz-{{ loop.index }}"
+                 value="{{ k.workflow_status.notiz }}"
+                 placeholder="Notiz …">
+        </td>
+        <td>
+          <button class="btn btn-primary btn-sm"
+                  onclick="speichereStatus({{ loop.index }}, '{{ k.name }}')">
+            Speichern
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const FARBEN = {
+  grau: 'grau', blau: 'blau', orange: 'orange', gruen: 'gruen', rot: 'rot'
+};
+
+function statusGewechselt(sel) {
+  // Visuelles Feedback beim Ändern
+  sel.style.borderColor = '#1a6b9e';
+}
+
+async function speichereStatus(idx, name) {
+  const status = document.getElementById(`status-${idx}`).value;
+  const notiz  = document.getElementById(`notiz-${idx}`).value;
+  const btn    = event.target;
+  btn.textContent = '…';
+  btn.disabled = true;
+
+  const data = await apiPost('/api/status', {name, status, notiz});
+
+  if (data.ok) {
+    // Progress-Bar aktualisieren
+    const pb  = document.getElementById(`pb-${idx}`);
+    const pct = document.getElementById(`pct-${idx}`);
+    pb.style.width = data.fortschritt + '%';
+    pb.className = `progress-bar pb-${data.farbe}`;
+    pct.textContent = data.fortschritt + '%';
+
+    // Badge aktualisieren
+    document.getElementById(`badge-${idx}`).innerHTML =
+      `<span class="badge badge-${data.farbe}">${data.label}</span>`;
+
+    showToast(`✓ ${name} → ${data.label}`);
+  } else {
+    showToast('Fehler beim Speichern', 3000);
+  }
+  btn.textContent = 'Speichern';
+  btn.disabled = false;
+}
+
+function filterTabelle() {
+  const name   = document.getElementById('filterName').value.toLowerCase();
+  const status = document.getElementById('filterStatus').value;
+  const ampel  = document.getElementById('filterAmpel').value;
+
+  document.querySelectorAll('#kandidatenTabelle tbody tr').forEach(row => {
+    const rName   = row.dataset.name.toLowerCase();
+    const rStatus = row.dataset.status;
+    const rAmpel  = row.dataset.ampel;
+    const visible =
+      (!name   || rName.includes(name)) &&
+      (!status || rStatus === status)   &&
+      (!ampel  || rAmpel === ampel);
+    row.style.display = visible ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}
