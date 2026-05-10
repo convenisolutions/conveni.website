@@ -1,6 +1,7 @@
 """
-Förderberechtigungs-Prüfung für Sprachkurse
-Grundlage: DeuFöV (Deutschsprachförderverordnung), § 45a AufenthG, § 421 SGB III
+Förderberechtigungs-Prüfung für Sprachkurse und berufliche Weiterbildung
+Grundlage: DeuFöV (Deutschsprachförderverordnung), § 43/45a AufenthG,
+           § 421 SGB III, IntV (Integrationskursverordnung), IQ-Netzwerk
 Zielgruppe: Fachkräfte aus Drittstaaten (Philippinen, Vietnam)
 """
 
@@ -10,42 +11,156 @@ from datetime import datetime, date
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
-# Förderprogramme und ihre Kriterien
+# Berufssprachkurs-Module (DeuFöV / BAMF) – vollständige Übersicht
+# ---------------------------------------------------------------------------
+
+# Welches BSK-Modul passt zu welchem Berufsfeld?
+BSK_MODULE = {
+    # Gesundheit & Soziales → BSK-900 Spezialkurs
+    "Pflege":            ("BSK-Spezialkurs Pflege",   "900 UE", "A2–B2+", "BAMF-Formular 600-P"),
+    "Altenpflege":       ("BSK-Spezialkurs Pflege",   "900 UE", "A2–B2+", "BAMF-Formular 600-P"),
+    "Krankenpflege":     ("BSK-Spezialkurs Pflege",   "900 UE", "A2–B2+", "BAMF-Formular 600-P"),
+    "Medizin":           ("BSK-Spezialkurs Medizin",  "900 UE", "B1–C1",  "BAMF-Formular 600-M"),
+    "Arztpraxis":        ("BSK-Spezialkurs Medizin",  "900 UE", "B1–C1",  "BAMF-Formular 600-M"),
+    "Erziehung":         ("BSK-Spezialkurs Pädagogik","900 UE", "A2–B2",  "BAMF-Formular 600"),
+    # Handwerk / Industrie → BSK-510 Standard
+    "Handwerk":          ("BSK-Standardkurs",         "510 UE", "A2–B1",  "BAMF-Formular 540"),
+    "Bau":               ("BSK-Standardkurs",         "510 UE", "A2–B1",  "BAMF-Formular 540"),
+    "Elektro":           ("BSK-Standardkurs",         "510 UE", "A2–B1",  "BAMF-Formular 540"),
+    "Logistik":          ("BSK-Standardkurs",         "510 UE", "A2–B1",  "BAMF-Formular 540"),
+    "Gastronomie":       ("BSK-Standardkurs",         "510 UE", "A2–B1",  "BAMF-Formular 540"),
+    "Einzelhandel":      ("BSK-Standardkurs",         "510 UE", "A2–B1",  "BAMF-Formular 540"),
+    # IT / Kaufmännisch → BSK-Fachkurs (höheres Niveau)
+    "IT":                ("BSK-Fachkurs",             "400 UE", "B2–C1",  "BAMF-Formular 540"),
+    "Ingenieur":         ("BSK-Fachkurs",             "400 UE", "B2–C1",  "BAMF-Formular 540"),
+    "Kaufmännisch":      ("BSK-Fachkurs",             "400 UE", "B2–C1",  "BAMF-Formular 540"),
+}
+BSK_DEFAULT = ("BSK-Standardkurs", "510 UE", "A2–B1", "BAMF-Formular 540")
+
+# ---------------------------------------------------------------------------
+# Integrationskurs-Varianten (§ 43 AufenthG / IntV)
+# ---------------------------------------------------------------------------
+
+INTEGRATIONSKURS_TYPEN = {
+    "alphabetisierung": {
+        "name": "Alphabetisierungskurs",
+        "ue": "900 UE Sprachkurs + 100 UE Orientierungskurs",
+        "zielgruppe": "Personen ohne lateinische Schriftkenntnisse",
+        "niveau_ziel": "A2–B1",
+        "kosten": "Ca. 1,95 € / UE (Erlass bei geringem Einkommen möglich)",
+        "pflicht_dokumente": [
+            "Reisepass (Kopie)",
+            "Aufenthaltstitel (Kopie)",
+            "Antrag auf Zulassung Alphabetisierungskurs (BAMF-Formular)",
+            "Berechtigungsschein der Ausländerbehörde",
+            "Ggf. Nachweis über fehlende Alphabetisierung (Kursträger-Einstufung)",
+        ],
+    },
+    "allgemein": {
+        "name": "Allgemeiner Integrationskurs",
+        "ue": "660 UE Sprachkurs + 100 UE Orientierungskurs",
+        "zielgruppe": "Drittstaatsangehörige mit Grundkenntnissen (A1–A2)",
+        "niveau_ziel": "B1",
+        "kosten": "Ca. 1,95 € / UE (Erlass bei geringem Einkommen möglich)",
+        "pflicht_dokumente": [
+            "Reisepass (Kopie)",
+            "Aufenthaltstitel / Niederlassungserlaubnis (Kopie)",
+            "Antrag auf Zulassung zum Integrationskurs (BAMF-Formular 101)",
+            "Berechtigungsschein der Ausländerbehörde (falls vorhanden)",
+        ],
+    },
+    "intensiv": {
+        "name": "Intensiv-Integrationskurs",
+        "ue": "430 UE Sprachkurs + 30 UE Orientierungskurs",
+        "zielgruppe": "Lernstarke Teilnehmer mit schnellem Lernerfolg",
+        "niveau_ziel": "B1",
+        "kosten": "Ca. 1,95 € / UE",
+        "pflicht_dokumente": [
+            "Reisepass (Kopie)",
+            "Aufenthaltstitel (Kopie)",
+            "Antrag auf Zulassung Intensivkurs (BAMF-Formular 101)",
+            "Einstufungstest beim Kursträger",
+        ],
+    },
+    "frauen": {
+        "name": "Frauen- / Elternkurs",
+        "ue": "660 UE Sprachkurs + 100 UE Orientierungskurs",
+        "zielgruppe": "Frauen mit Kinderbetreuungsbedarf / Elternteile",
+        "niveau_ziel": "B1",
+        "kosten": "Ca. 1,95 € / UE (Kostenübernahme Kinderbetreuung möglich)",
+        "pflicht_dokumente": [
+            "Reisepass (Kopie)",
+            "Aufenthaltstitel (Kopie)",
+            "Antrag auf Zulassung Frauenkurs (BAMF-Formular 101)",
+            "Nachweis Kinderbetreuungsbedarf (Geburtsurkunde Kind)",
+        ],
+    },
+    "jugend": {
+        "name": "Jugend-Integrationskurs",
+        "ue": "900 UE Sprachkurs + 100 UE Orientierungskurs",
+        "zielgruppe": "Junge Erwachsene unter 27 Jahren",
+        "niveau_ziel": "B1",
+        "kosten": "Ca. 1,95 € / UE",
+        "pflicht_dokumente": [
+            "Reisepass (Kopie)",
+            "Aufenthaltstitel (Kopie)",
+            "Antrag auf Zulassung Jugendkurs (BAMF-Formular 101)",
+            "Altersnachweis (unter 27 Jahre)",
+        ],
+    },
+}
+
+# ---------------------------------------------------------------------------
+# Förderprogramme – vollständige Übersicht
 # ---------------------------------------------------------------------------
 
 PROGRAMME = {
     "Berufssprachkurs (BSK)": {
         "beschreibung": (
             "Berufssprachkurse nach § 45a AufenthG / DeuFöV. "
-            "Speziell für berufliche Integration in Deutschland."
+            "Speziell für die berufliche Integration in Deutschland. "
+            "Spezialkurse für Pflege/Medizin mit 900 UE, Standardkurse mit 510 UE, "
+            "Fachkurse (B2–C1) mit 400 UE."
         ),
         "foerderer": "BAMF",
-        "kosten": "Kostenfrei oder stark subventioniert (ca. 2,07 € / UE Eigenanteil)",
+        "kosten": "Ca. 2,07 € / UE Eigenanteil (bei Hartz-IV-Bezug: kostenfrei)",
         "niveau": ["A2", "B1", "B2", "C1"],
-        "spezialmodule": {
-            "Pflege": "BSK-Modul Pflege (900 UE)",
-            "Medizin": "BSK-Modul Medizin",
-            "Handwerk": "BSK-Standardkurs (510 UE)",
-            "IT": "BSK-Standardkurs (510 UE)",
-            "Gastronomie": "BSK-Standardkurs (510 UE)",
-        },
+        "antrag_stelle": "BAMF-Kursträger vor Ort (bamf.de/kurstraeger)",
         "pflicht_dokumente": [
             "Reisepass (Kopie, alle Seiten)",
             "Aufenthaltstitel (Kopie, Vorder- und Rückseite)",
-            "Arbeitsvertrag ODER Arbeitgeberbestätigung (bei Beschäftigung)",
-            "Nachweis aktuelles Sprachniveau (Einstufungstest beim Kursträger)",
-            "Ausgefülltes BAMF-Antragsformular (Formular 540)",
+            "Arbeitsvertrag ODER Arbeitgeberbestätigung",
+            "Einstufungstest beim Kursträger (wird dort durchgeführt)",
+            "BAMF-Antragsformular (Nummer je nach Modul – siehe oben)",
+        ],
+    },
+    "Integrationskurs": {
+        "beschreibung": (
+            "Sprach- und Orientierungskurs nach § 43 AufenthG / IntV. "
+            "Verschiedene Kurstypen: Allgemein, Alphabetisierung, Intensiv, "
+            "Frauen-/Elternkurs, Jugendkurs."
+        ),
+        "foerderer": "BAMF",
+        "kosten": "Ca. 1,95 € / UE (Erlass bei geringem Einkommen möglich)",
+        "niveau": ["A1", "A2"],
+        "antrag_stelle": "BAMF direkt oder über Ausländerbehörde",
+        "pflicht_dokumente": [
+            "Reisepass (Kopie)",
+            "Aufenthaltstitel (Kopie)",
+            "BAMF-Formular 101 (Antrag auf Zulassung)",
+            "Berechtigungsschein der Ausländerbehörde (falls ausgestellt)",
         ],
     },
     "FbD – Förderung berufsbez. Deutschkenntnisse": {
         "beschreibung": (
-            "ESF-gefördertes Programm über BAMF. Für Beschäftigte und Arbeitssuchende "
-            "mit Bedarf an berufsbezogenem Deutsch."
+            "ESF-gefördertes BAMF-Programm. Für Beschäftigte und Arbeitssuchende "
+            "mit Bedarf an berufsbezogenem Deutsch (Niveau A2–C1). "
+            "Ergänzt den BSK und ist oft kombinierbar."
         ),
         "foerderer": "BAMF / ESF",
         "kosten": "Kostenfrei für Teilnehmende",
         "niveau": ["A2", "B1", "B2", "C1"],
-        "spezialmodule": {},
+        "antrag_stelle": "FbD-Kursträger (bamf.de/fbd)",
         "pflicht_dokumente": [
             "Reisepass (Kopie)",
             "Aufenthaltstitel (Kopie)",
@@ -54,42 +169,113 @@ PROGRAMME = {
             "Anerkennungsbescheid ODER Nachweis laufendes Anerkennungsverfahren",
         ],
     },
-    "Integrationskurs": {
-        "beschreibung": (
-            "Sprach- und Orientierungskurs nach § 43 AufenthG. "
-            "Für Drittstaatsangehörige im frühen Aufenthaltsstadium."
-        ),
-        "foerderer": "BAMF",
-        "kosten": "Ca. 1,95 € / UE (Ermäßigung / Erlass möglich)",
-        "niveau": ["A1", "A2"],
-        "spezialmodule": {},
-        "pflicht_dokumente": [
-            "Reisepass (Kopie)",
-            "Aufenthaltstitel / Niederlassungserlaubnis (Kopie)",
-            "Ausgefüllter Antrag auf Zulassung zum Integrationskurs",
-            "Ggf. Berechtigungsschein der Ausländerbehörde",
-        ],
-    },
     "§ 421 SGB III – Sprachkurs über Agentur für Arbeit": {
         "beschreibung": (
             "Förderung von Deutschkursen über die Bundesagentur für Arbeit "
-            "für arbeitssuchend gemeldete Personen."
+            "für arbeitssuchend gemeldete Personen (Bildungsgutschein)."
         ),
         "foerderer": "Agentur für Arbeit / Jobcenter",
         "kosten": "Kostenfrei (Bildungsgutschein)",
         "niveau": ["A1", "A2", "B1", "B2"],
-        "spezialmodule": {},
+        "antrag_stelle": "Zuständige Agentur für Arbeit / Jobcenter",
         "pflicht_dokumente": [
             "Reisepass (Kopie)",
             "Aufenthaltstitel (Kopie)",
             "Beratungsgespräch beim Arbeitsberater (Termin vereinbaren)",
-            "Nachweis der Arbeitsuche / Arbeitlosigkeit",
+            "Nachweis der Arbeitsuche / Arbeitslosigkeit",
             "Bildungsgutschein (wird bei Bewilligung ausgestellt)",
+        ],
+    },
+    "Berufliche Weiterbildung – IQ Netzwerk": {
+        "beschreibung": (
+            "Kostenloses Beratungsangebot zur Anerkennung ausländischer Berufsabschlüsse "
+            "und zu Qualifizierungsmaßnahmen (Nachqualifizierung, Anpassungsqualifizierung). "
+            "Besonders relevant bei laufendem oder noch nicht beantragtem Anerkennungsverfahren."
+        ),
+        "foerderer": "IQ Netzwerk / BMAS / ESF",
+        "kosten": "Beratung kostenfrei; Qualifizierungsmaßnahmen ggf. über AVGS oder Bildungsgutschein",
+        "niveau": ["alle"],
+        "antrag_stelle": "Nächste IQ-Beratungsstelle (netzwerk-iq.de)",
+        "pflicht_dokumente": [
+            "Reisepass (Kopie)",
+            "Aufenthaltstitel (Kopie)",
+            "Ausländischer Berufsabschluss / Zeugnisse (Original + beglaubigte Übersetzung)",
+            "Anerkennungsbescheid oder laufender Bescheid der zuständigen Stelle",
+            "Lebenslauf (auf Deutsch)",
+        ],
+    },
+    "Nachqualifizierung / Anpassungsqualifizierung": {
+        "beschreibung": (
+            "Gezielte berufliche Nachqualifizierung, um fehlende Kompetenzen zum deutschen "
+            "Berufsabschluss zu ergänzen (v.a. Pflege, Medizin, Handwerk, Erziehung). "
+            "Wird durch AVGS (Aktivierungs- und Vermittlungsgutschein) oder "
+            "Bildungsgutschein der AA gefördert."
+        ),
+        "foerderer": "Agentur für Arbeit / Jobcenter / ESF",
+        "kosten": "Kostenfrei bei Bewilligung über Bildungsgutschein / AVGS",
+        "niveau": ["alle"],
+        "antrag_stelle": "Agentur für Arbeit (nach IQ-Beratung)",
+        "pflicht_dokumente": [
+            "Reisepass (Kopie)",
+            "Aufenthaltstitel (Kopie)",
+            "Anerkennungsbescheid mit Feststellung fehlender Kompetenzen (Defizitbescheid)",
+            "Lebenslauf (auf Deutsch)",
+            "Ausländische Berufsabschlüsse + beglaubigte Übersetzung",
+            "Bildungsgutschein oder AVGS (wird von der AA ausgestellt)",
         ],
     },
 }
 
 SPRACHNIVEAU_RANG = {"A1": 1, "A2": 2, "B1": 3, "B2": 4, "C1": 5, "C2": 6}
+
+# ---------------------------------------------------------------------------
+# Integrationskurs-Typ ermitteln
+# ---------------------------------------------------------------------------
+
+def _waehle_integrationskurs_typ(niveau_rang: int, zeile: pd.Series) -> dict:
+    """Wählt den passenden Integrationskurstyp basierend auf Kandidatenprofil."""
+    alphabetisierung = str(zeile.get("alphabetisierungsbedarf", "nein")).strip().lower() in (
+        "ja", "yes", "true", "1"
+    )
+    geschlecht = str(zeile.get("geschlecht", "")).strip().lower()
+    geburtsdatum_raw = str(zeile.get("geburtsdatum", "")).strip()
+
+    if alphabetisierung:
+        return INTEGRATIONSKURS_TYPEN["alphabetisierung"]
+
+    alter = None
+    if geburtsdatum_raw:
+        try:
+            geb = datetime.strptime(geburtsdatum_raw, "%Y-%m-%d").date()
+            alter = (date.today() - geb).days // 365
+        except ValueError:
+            pass
+
+    if alter is not None and alter < 27:
+        return INTEGRATIONSKURS_TYPEN["jugend"]
+
+    if geschlecht in ("w", "weiblich", "female", "f"):
+        return INTEGRATIONSKURS_TYPEN["frauen"]
+
+    # Lernstarke Kandidaten (A2) → Intensivkurs vorschlagen
+    if niveau_rang == 2:
+        return INTEGRATIONSKURS_TYPEN["intensiv"]
+
+    return INTEGRATIONSKURS_TYPEN["allgemein"]
+
+
+# ---------------------------------------------------------------------------
+# BSK-Modul ermitteln
+# ---------------------------------------------------------------------------
+
+def _waehle_bsk_modul(berufsfeld: str, niveau_rang: int) -> tuple:
+    """Gibt (Modulname, UE, Niveau, Formular) zurück."""
+    modul = BSK_MODULE.get(berufsfeld, BSK_DEFAULT)
+    # B2+ Kandidaten ohne Spezialkurs → Fachkurs empfehlen
+    if niveau_rang >= 4 and modul == BSK_DEFAULT:
+        return ("BSK-Fachkurs", "400 UE", "B2–C1", "BAMF-Formular 540")
+    return modul
+
 
 # ---------------------------------------------------------------------------
 # Berechtigungsprüfung
@@ -111,12 +297,31 @@ def pruefe_kandidat(zeile: pd.Series) -> dict:
 
     # --- Berufssprachkurs (BSK) ---
     if niveau_rang >= 2 and beschaeftigt:
-        prog = PROGRAMME["Berufssprachkurs (BSK)"].copy()
-        module = prog["spezialmodule"].get(berufsfeld, "BSK-Standardkurs (510 UE)")
+        modulname, ue, niv_ziel, formular = _waehle_bsk_modul(berufsfeld, niveau_rang)
+        prog = dict(PROGRAMME["Berufssprachkurs (BSK)"])
+        prog["pflicht_dokumente"] = [
+            d if "Formular" not in d else f"BAMF-Antragsformular ({formular})"
+            for d in prog["pflicht_dokumente"]
+        ]
         berechtigte_programme.append({
             "name": "Berufssprachkurs (BSK)",
             "details": prog,
-            "empfohlenes_modul": module,
+            "empfohlenes_modul": f"{modulname} – {ue} – Zielniveau {niv_ziel}",
+        })
+
+    # --- Integrationskurs ---
+    if niveau_rang <= 2:
+        kurstyp = _waehle_integrationskurs_typ(niveau_rang, zeile)
+        prog = dict(PROGRAMME["Integrationskurs"])
+        prog["pflicht_dokumente"] = kurstyp["pflicht_dokumente"]
+        prog["kosten"] = kurstyp["kosten"]
+        berechtigte_programme.append({
+            "name": f"Integrationskurs – {kurstyp['name']}",
+            "details": prog,
+            "empfohlenes_modul": (
+                f"{kurstyp['name']} | {kurstyp['ue']} | "
+                f"Zielniveau {kurstyp['niveau_ziel']} | {kurstyp['zielgruppe']}"
+            ),
         })
 
     # --- FbD ---
@@ -128,22 +333,13 @@ def pruefe_kandidat(zeile: pd.Series) -> dict:
                 "(steigert Fördermöglichkeiten deutlich)."
             )
             extra_dokumente.append("Einleitung des Anerkennungsverfahrens empfohlen")
-        prog = PROGRAMME["FbD – Förderung berufsbez. Deutschkenntnisse"].copy()
+        prog = dict(PROGRAMME["FbD – Förderung berufsbez. Deutschkenntnisse"])
         if extra_dokumente:
-            prog = dict(prog)
             prog["pflicht_dokumente"] = prog["pflicht_dokumente"] + extra_dokumente
         berechtigte_programme.append({
             "name": "FbD – Förderung berufsbez. Deutschkenntnisse",
             "details": prog,
-            "empfohlenes_modul": "Standardkurs",
-        })
-
-    # --- Integrationskurs ---
-    if niveau_rang <= 2:
-        berechtigte_programme.append({
-            "name": "Integrationskurs",
-            "details": PROGRAMME["Integrationskurs"],
-            "empfohlenes_modul": f"Integrationskurs (660 UE Sprachkurs + 100 UE Orientierung)",
+            "empfohlenes_modul": f"FbD-Kurs (kombinierbar mit BSK) – Niveau {niveau}–C1",
         })
 
     # --- § 421 SGB III ---
@@ -151,17 +347,46 @@ def pruefe_kandidat(zeile: pd.Series) -> dict:
         berechtigte_programme.append({
             "name": "§ 421 SGB III – Sprachkurs über Agentur für Arbeit",
             "details": PROGRAMME["§ 421 SGB III – Sprachkurs über Agentur für Arbeit"],
-            "empfohlenes_modul": "Bildungsgutschein beantragen",
+            "empfohlenes_modul": "Bildungsgutschein beantragen (Beratungsgespräch bei AA vereinbaren)",
         })
         hinweise.append(
             "§ 421 SGB III: Kandidat muss sich als arbeitssuchend bei der Agentur für Arbeit melden."
         )
 
+    # --- IQ Netzwerk (immer relevant wenn Anerkennung offen) ---
+    if anerkennung in ("nicht beantragt", "laufend"):
+        berechtigte_programme.append({
+            "name": "Berufliche Weiterbildung – IQ Netzwerk",
+            "details": PROGRAMME["Berufliche Weiterbildung – IQ Netzwerk"],
+            "empfohlenes_modul": (
+                "Anerkennungsberatung → netzwerk-iq.de"
+                + (" | Anerkennungsverfahren einleiten!" if anerkennung == "nicht beantragt"
+                   else " | Verfahren begleiten lassen")
+            ),
+        })
+
+    # --- Nachqualifizierung (wenn Defizitbescheid vorliegt / laufend) ---
+    if anerkennung == "laufend":
+        berechtigte_programme.append({
+            "name": "Nachqualifizierung / Anpassungsqualifizierung",
+            "details": PROGRAMME["Nachqualifizierung / Anpassungsqualifizierung"],
+            "empfohlenes_modul": (
+                f"Anpassungsqualifizierung im Berufsfeld {berufsfeld} "
+                f"(nach Defizitbescheid der Anerkennungsstelle)"
+            ),
+        })
+
     # --- Allgemeine Hinweise ---
     if "blaue karte" in aufenthaltstitel.lower():
         hinweise.append(
-            "Blaue Karte EU: Besondere Privilegien beim Familiennachzug und Niederlassungserlaubnis – "
-            "prüfen, ob Sprachkurse als Anerkennungsleistung anrechenbar sind."
+            "Blaue Karte EU: Niederlassungserlaubnis bereits nach 21 Monaten mit B1-Nachweis "
+            "(§ 18c Abs. 3 AufenthG) – BSK-Abschluss strategisch nutzen!"
+        )
+
+    if berufsfeld in ("Pflege", "Altenpflege", "Krankenpflege", "Medizin", "Arztpraxis"):
+        hinweise.append(
+            f"Reglementierter Beruf ({berufsfeld}): Berufserlaubnis / Berufsanerkennung "
+            "ist Pflichtvoraussetzung für Beschäftigung – bitte Anerkennungsstatus prüfen."
         )
 
     # Aufenthaltstitel-Ablaufdatum prüfen
