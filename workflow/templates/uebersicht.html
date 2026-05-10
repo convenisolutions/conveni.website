@@ -94,6 +94,21 @@
     /* Aufenthaltsweg */
     .aw-cell { font-size: 11px; color: #555; }
 
+    /* Workflow-Status */
+    .ws-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; white-space: nowrap; }
+    .ws-grau   { background: #e9ecef; color: #495057; }
+    .ws-blau   { background: #cce5ff; color: #004085; }
+    .ws-orange { background: #ffe8cc; color: #7d4000; }
+    .ws-gruen  { background: #d4edda; color: #155724; }
+    .ws-rot    { background: #f8d7da; color: #721c24; }
+    .progress-bar-wrap { width: 80px; background: #e9ecef; border-radius: 4px; height: 6px; margin-top: 4px; overflow: hidden; }
+    .progress-bar-fill { height: 6px; border-radius: 4px; }
+    .pb-grau   { background: #adb5bd; }
+    .pb-blau   { background: #1a6b9e; }
+    .pb-orange { background: #fd7e14; }
+    .pb-gruen  { background: #28a745; }
+    .pb-rot    { background: #dc3545; }
+
     .footer { text-align: center; color: #999; font-size: 11px; padding: 20px 0 30px; }
 
     @media print {
@@ -135,13 +150,22 @@
     </div>
   </div>
 
+  <!-- Workflow-Fortschritt Banner -->
+  <div style="background:#fff;border-radius:8px;padding:12px 20px;box-shadow:0 1px 6px rgba(0,0,0,0.08);margin-bottom:20px;display:flex;gap:24px;align-items:center;font-size:12px;">
+    <strong style="color:#0d3b66;">Workflow-Fortschritt:</strong>
+    <span><span style="font-size:18px;font-weight:700;color:#1a6b9e;">{{ workflow_fortschritt.aktiv }}</span> im Workflow</span>
+    <span><span style="font-size:18px;font-weight:700;color:#28a745;">{{ workflow_fortschritt.abgeschlossen }}</span> abgeschlossen</span>
+    <span><span style="font-size:18px;font-weight:700;color:#adb5bd;">{{ workflow_fortschritt.neu }}</span> neu / noch nicht gestartet</span>
+  </div>
+
   <!-- Kandidaten-Tabelle -->
   <div class="section-title">Alle Kandidaten</div>
   <div class="table-wrap">
     <table>
       <thead>
         <tr>
-          <th>Status</th>
+          <th>Ampel</th>
+          <th>Workflow-Status</th>
           <th>Name</th>
           <th>Nationalität</th>
           <th>Niveau</th>
@@ -161,6 +185,13 @@
             <span class="badge badge-{{ k.status_ampel }}" style="margin-left:4px;">
               {% if k.status_ampel == 'rot' %}Dringend{% elif k.status_ampel == 'gelb' %}Prüfen{% else %}OK{% endif %}
             </span>
+          </td>
+          <td style="min-width:110px;">
+            <span class="ws-badge ws-{{ k.workflow_status.farbe }}">{{ k.workflow_status.label }}</span>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill pb-{{ k.workflow_status.farbe }}" style="width:{{ k.workflow_status.fortschritt }}%;"></div>
+            </div>
+            <div style="font-size:10px;color:#888;margin-top:2px;">{{ k.workflow_status.fortschritt }}%{% if k.workflow_status.notiz %} · {{ k.workflow_status.notiz[:30] }}{% endif %}</div>
           </td>
           <td>
             <strong>{{ k.name }}</strong><br>

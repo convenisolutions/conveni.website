@@ -1,0 +1,134 @@
+{
+  "thi_lan_nguyen": {
+    "name": "Thi Lan Nguyen",
+    "aktuell": "kurs_laeuft",
+    "aktuell_label": "Kurs läuft",
+    "zuletzt_geaendert": "2026-05-10",
+    "notiz": "VHS München, startet 12.05.",
+    "verlauf": [
+      {
+        "status": "neu",
+        "label": "Neu aufgenommen",
+        "datum": "2026-05-10",
+        "notiz": "Automatisch initialisiert"
+      },
+      {
+        "status": "kurs_laeuft",
+        "label": "Kurs läuft",
+        "datum": "2026-05-10",
+        "notiz": "VHS München, startet 12.05."
+      }
+    ]
+  },
+  "maria_santos": {
+    "name": "Maria Santos",
+    "aktuell": "antrag_gestellt",
+    "aktuell_label": "Förderantrag eingereicht",
+    "zuletzt_geaendert": "2026-05-10",
+    "notiz": "",
+    "verlauf": [
+      {
+        "status": "neu",
+        "label": "Neu aufgenommen",
+        "datum": "2026-05-10",
+        "notiz": "Automatisch initialisiert"
+      },
+      {
+        "status": "antrag_gestellt",
+        "label": "Förderantrag eingereicht",
+        "datum": "2026-05-10",
+        "notiz": ""
+      }
+    ]
+  },
+  "jose_reyes": {
+    "name": "Jose Reyes",
+    "aktuell": "neu",
+    "aktuell_label": "Neu aufgenommen",
+    "zuletzt_geaendert": "2026-05-10",
+    "notiz": "",
+    "verlauf": [
+      {
+        "status": "neu",
+        "label": "Neu aufgenommen",
+        "datum": "2026-05-10",
+        "notiz": "Automatisch initialisiert"
+      }
+    ]
+  },
+  "van_minh_tran": {
+    "name": "Van Minh Tran",
+    "aktuell": "neu",
+    "aktuell_label": "Neu aufgenommen",
+    "zuletzt_geaendert": "2026-05-10",
+    "notiz": "",
+    "verlauf": [
+      {
+        "status": "neu",
+        "label": "Neu aufgenommen",
+        "datum": "2026-05-10",
+        "notiz": "Automatisch initialisiert"
+      }
+    ]
+  },
+  "ana_dela_cruz": {
+    "name": "Ana Dela Cruz",
+    "aktuell": "neu",
+    "aktuell_label": "Neu aufgenommen",
+    "zuletzt_geaendert": "2026-05-10",
+    "notiz": "",
+    "verlauf": [
+      {
+        "status": "neu",
+        "label": "Neu aufgenommen",
+        "datum": "2026-05-10",
+        "notiz": "Automatisch initialisiert"
+      }
+    ]
+  },
+  "thi_huong_pham": {
+    "name": "Thi Huong Pham",
+    "aktuell": "neu",
+    "aktuell_label": "Neu aufgenommen",
+    "zuletzt_geaendert": "2026-05-10",
+    "notiz": "",
+    "verlauf": [
+      {
+        "status": "neu",
+        "label": "Neu aufgenommen",
+        "datum": "2026-05-10",
+        "notiz": "Automatisch initialisiert"
+      }
+    ]
+  },
+  "ramon_garcia": {
+    "name": "Ramon Garcia",
+    "aktuell": "neu",
+    "aktuell_label": "Neu aufgenommen",
+    "zuletzt_geaendert": "2026-05-10",
+    "notiz": "",
+    "verlauf": [
+      {
+        "status": "neu",
+        "label": "Neu aufgenommen",
+        "datum": "2026-05-10",
+        "notiz": "Automatisch initialisiert"
+      }
+    ]
+  },
+  "thi_thu_le": {
+    "name": "Thi Thu Le",
+    "aktuell": "neu",
+    "aktuell_label": "Neu aufgenommen",
+    "zuletzt_geaendert": "2026-05-10",
+    "notiz": "",
+    "verlauf": [
+      {
+        "status": "neu",
+        "label": "Neu aufgenommen",
+        "datum": "2026-05-10",
+        "notiz": "Automatisch initialisiert"
+      }
+    ]
+  }
+}

@@ -10,6 +10,7 @@ from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
 
 from check_foerderung import pruefe_kandidat
+from status_manager import status_initialisieren, status_holen, get_fortschritt, STATUSWERTE
 
 
 def generiere_uebersicht(eingabe_pfad: str | None = None, ausgabe_ordner: str = "output"):
@@ -33,6 +34,25 @@ def generiere_uebersicht(eingabe_pfad: str | None = None, ausgabe_ordner: str = 
     datum = datetime.now().strftime("%d.%m.%Y %H:%M")
     kandidaten = [pruefe_kandidat(zeile) for _, zeile in df.iterrows()]
 
+    # Workflow-Status einlesen und pro Kandidat anreichern
+    status_initialisieren(str(eingabe))
+    for k in kandidaten:
+        eintrag = status_holen(k["name"])
+        if eintrag:
+            status_key = eintrag.get("aktuell", "neu")
+            k["workflow_status"] = {
+                "key": status_key,
+                "label": STATUSWERTE.get(status_key, {}).get("label", status_key),
+                "farbe": STATUSWERTE.get(status_key, {}).get("farbe", "grau"),
+                "fortschritt": get_fortschritt(status_key),
+                "notiz": eintrag.get("notiz", ""),
+            }
+        else:
+            k["workflow_status"] = {
+                "key": "neu", "label": "Neu aufgenommen",
+                "farbe": "grau", "fortschritt": 0, "notiz": "",
+            }
+
     # Statistiken
     gesamt = len(kandidaten)
     rot = sum(1 for k in kandidaten if k["status_ampel"] == "rot")
@@ -51,6 +71,13 @@ def generiere_uebersicht(eingabe_pfad: str | None = None, ausgabe_ordner: str = 
             alle_wiedervorlage.append({**t, "kandidat_name": k["name"]})
     alle_wiedervorlage.sort(key=lambda t: t["datum"])
 
+    # Workflow-Statistik (Anzahl pro Status-Gruppe)
+    workflow_fortschritt = {
+        "aktiv": sum(1 for k in kandidaten if k["workflow_status"]["key"] not in ("neu", "abgebrochen", "pausiert")),
+        "abgeschlossen": sum(1 for k in kandidaten if k["workflow_status"]["farbe"] == "gruen"),
+        "neu": sum(1 for k in kandidaten if k["workflow_status"]["key"] == "neu"),
+    }
+
     html = template.render(
         kandidaten=kandidaten,
         datum=datum,
@@ -60,6 +87,7 @@ def generiere_uebersicht(eingabe_pfad: str | None = None, ausgabe_ordner: str = 
             "gelb": gelb,
             "gruen": gruen,
         },
+        workflow_fortschritt=workflow_fortschritt,
         programme_zaehler=sorted(programme_zaehler.items(), key=lambda x: -x[1]),
         alle_wiedervorlage=alle_wiedervorlage,
     )

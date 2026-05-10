@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Arbeitgeber-Mappe – {{ ag_name }}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #1a1a2e; background: #f5f5f5; padding: 20px; }
+    .page { max-width: 860px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 14px rgba(0,0,0,0.1); overflow: hidden; }
+
+    .header { background: linear-gradient(135deg, #2c3e50, #3d5a80); color: #fff; padding: 28px 36px; }
+    .header-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .header h1 { font-size: 22px; margin-bottom: 4px; }
+    .header .ag { font-size: 17px; font-weight: 700; color: #e8f4f8; margin-bottom: 2px; }
+    .header .sub { font-size: 12px; opacity: 0.8; }
+    .header-badge { background: rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 16px; text-align: center; }
+    .header-badge .zahl { font-size: 28px; font-weight: 700; }
+    .header-badge .bez { font-size: 11px; opacity: 0.85; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 2px solid #e8ecf0; }
+    .stat { padding: 14px 18px; border-right: 1px solid #e8ecf0; text-align: center; }
+    .stat:last-child { border-right: none; }
+    .stat-zahl { font-size: 24px; font-weight: 700; color: #2c3e50; }
+    .stat-label { font-size: 11px; color: #777; margin-top: 2px; }
+
+    .content { padding: 26px 36px; }
+
+    .section-title {
+      font-size: 14px; font-weight: 700; color: #2c3e50;
+      border-left: 4px solid #3d5a80; padding-left: 10px;
+      margin: 24px 0 12px;
+    }
+
+    /* Kandidaten-Tabelle */
+    .table-wrap { border-radius: 6px; overflow: hidden; border: 1px solid #dee2e6; margin-bottom: 4px; }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #2c3e50; color: #fff; padding: 9px 12px; text-align: left; font-size: 11px; }
+    td { padding: 8px 12px; border-bottom: 1px solid #eee; font-size: 12px; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f8fbff; }
+
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .badge-gruen { background: #d4edda; color: #155724; }
+    .badge-blau { background: #cce5ff; color: #004085; }
+    .badge-gelb { background: #fff3cd; color: #856404; }
+    .badge-rot { background: #f8d7da; color: #721c24; }
+    .badge-grau { background: #e9ecef; color: #495057; }
+
+    .prog-tags { display: flex; flex-wrap: wrap; gap: 3px; }
+    .prog-tag { background: #e3f0fb; color: #0d3b66; padding: 2px 6px; border-radius: 8px; font-size: 10px; }
+    .prog-tag-ag { background: #d4edda; color: #155724; }
+
+    /* Förderung */
+    .foerder-box { background: #f0f9f0; border: 1px solid #c3e6cb; border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
+    .foerder-header { background: #28a745; color: #fff; padding: 12px 18px; font-weight: 700; font-size: 14px; }
+    .foerder-body { padding: 16px 18px; }
+    .foerder-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }
+    .foerder-item { text-align: center; background: #fff; border-radius: 6px; padding: 14px 10px; border: 1px solid #c3e6cb; }
+    .foerder-zahl { font-size: 26px; font-weight: 700; color: #155724; }
+    .foerder-label { font-size: 11px; color: #555; margin-top: 3px; }
+    .foerder-hinweis { font-size: 12px; color: #155724; background: #e9f7ec; padding: 10px 14px; border-radius: 4px; border-left: 3px solid #28a745; }
+
+    /* Nächste Schritte */
+    .schritte-list { list-style: none; }
+    .schritt-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eee; }
+    .schritt-item:last-child { border-bottom: none; }
+    .schritt-nr { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; margin-top: 2px; }
+    .nr-sofort { background: #dc3545; }
+    .nr-diese_woche { background: #fd7e14; }
+    .nr-diesen_monat { background: #ffc107; }
+    .schritt-content { flex: 1; }
+    .schritt-titel { font-weight: 700; font-size: 13px; }
+    .schritt-details { font-size: 11px; color: #555; margin-top: 3px; }
+    .prio-label { font-size: 10px; font-weight: 700; color: #888; white-space: nowrap; margin-top: 4px; }
+
+    /* Pflichten */
+    .pflichten-list { list-style: none; }
+    .pflicht-item { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px dashed #e0e0e0; font-size: 12px; }
+    .pflicht-item:last-child { border-bottom: none; }
+    .pflicht-check { width: 18px; height: 18px; border: 1.5px solid #aaa; border-radius: 3px; flex-shrink: 0; margin-top: 1px; }
+
+    /* Wiedervorlage */
+    .wv-item { display: flex; gap: 14px; padding: 7px 0; border-bottom: 1px dashed #eee; font-size: 12px; }
+    .wv-item:last-child { border-bottom: none; }
+    .wv-datum { font-weight: 700; white-space: nowrap; min-width: 80px; }
+    .wv-hoch { color: #dc3545; }
+    .wv-mittel { color: #e6a800; }
+
+    /* Kontakt-Box */
+    .kontakt-box { background: #2c3e50; color: #fff; border-radius: 8px; padding: 18px 22px; margin-top: 24px; display: flex; justify-content: space-between; align-items: center; }
+    .kontakt-text { font-size: 13px; }
+    .kontakt-text h3 { font-size: 15px; margin-bottom: 6px; }
+    .kontakt-info { font-size: 12px; opacity: 0.85; }
+
+    .footer { border-top: 1px solid #e0e0e0; padding: 12px 36px; font-size: 11px; color: #999; display: flex; justify-content: space-between; }
+    @media print { body { background: white; padding: 0; } .page { box-shadow: none; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <div class="sub">Arbeitgeber-Mappe | Conveni Personalvermittlung</div>
+        <div class="ag">{{ ag_name }}</div>
+        <div class="sub">{{ ag_groesse }} | Erstellt am {{ datum }}</div>
+      </div>
+      <div class="header-badge">
+        <div class="zahl">{{ kandidaten|length }}</div>
+        <div class="bez">Kandidaten</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat">
+      <div class="stat-zahl">{{ ag_foerderung.bsk_kandidaten_anzahl }}</div>
+      <div class="stat-label">BSK-Kandidaten</div>
+    </div>
+    <div class="stat">
+      <div class="stat-zahl">{{ ag_foerderung.staffel.lehrgang }}</div>
+      <div class="stat-label">Lehrgangskosten-Übernahme</div>
+    </div>
+    <div class="stat">
+      <div class="stat-zahl">{{ ag_foerderung.staffel.lohn }}</div>
+      <div class="stat-label">Lohnkostenzuschuss (Kurszeit)</div>
+    </div>
+    <div class="stat">
+      <div class="stat-zahl">{{ wiedervorlage|length }}</div>
+      <div class="stat-label">Wiedervorlagen</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Kandidaten -->
+    <div class="section-title">Ihre Mitarbeiter im Förder-Workflow</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Mitarbeiter</th>
+            <th>Nationalität</th>
+            <th>Niveau</th>
+            <th>Berufsfeld</th>
+            <th>Aufenthaltstitel bis</th>
+            <th>Förderprogramme</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for k in kandidaten %}
+          <tr>
+            <td>
+              <strong>{{ k.name }}</strong><br>
+              <span style="color:#888;font-size:10px;">{{ k.email }}</span>
+            </td>
+            <td>{{ k.nationalitaet }}</td>
+            <td><span class="badge badge-blau">{{ k.sprachniveau }}</span></td>
+            <td>{{ k.berufsfeld }}</td>
+            <td>
+              {% if k.status_ampel == 'rot' %}
+                <span class="badge badge-rot">{{ k.aufenthaltstitel_ablauf }}</span>
+              {% else %}
+                {{ k.aufenthaltstitel_ablauf }}
+              {% endif %}
+            </td>
+            <td>
+              <div class="prog-tags">
+                {% for p in k.berechtigte_programme %}
+                  {% set pn = p.name.split('–')[0].strip().split('(')[0].strip() %}
+                  {% if 'Qualifizierungschancen' in p.name or 'Eingliederung' in p.name %}
+                    <span class="prog-tag prog-tag-ag" title="{{ p.empfohlenes_modul }}">AG: {{ pn[:16] }}</span>
+                  {% elif 'BSK' in p.name or 'FbD' in p.name or 'Integrations' in p.name %}
+                    <span class="prog-tag" title="{{ p.empfohlenes_modul }}">{{ pn[:18] }}</span>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </td>
+            <td>
+              {% if k.status_ampel == 'rot' %}
+                <span class="badge badge-rot">Dringend</span>
+              {% elif k.status_ampel == 'gelb' %}
+                <span class="badge badge-gelb">Prüfen</span>
+              {% else %}
+                <span class="badge badge-gruen">OK</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Arbeitgeberförderung -->
+    <div class="section-title">Ihre Förderungen als Arbeitgeber</div>
+    <div class="foerder-box">
+      <div class="foerder-header">Qualifizierungschancengesetz (§ 82 SGB III) – {{ ag_groesse }}</div>
+      <div class="foerder-body">
+        <div class="foerder-grid">
+          <div class="foerder-item">
+            <div class="foerder-zahl">{{ ag_foerderung.staffel.lehrgang }}</div>
+            <div class="foerder-label">Lehrgangskosten-Übernahme durch AA</div>
+          </div>
+          <div class="foerder-item">
+            <div class="foerder-zahl">{{ ag_foerderung.staffel.lohn }}</div>
+            <div class="foerder-label">Lohnkostenzuschuss während Kurszeit</div>
+          </div>
+          <div class="foerder-item">
+            <div class="foerder-zahl">{{ ag_foerderung.bsk_kandidaten_anzahl }}</div>
+            <div class="foerder-label">BSK-berechtigte Mitarbeiter</div>
+          </div>
+        </div>
+        <div class="foerder-hinweis">{{ ag_foerderung.hinweis }}</div>
+      </div>
+    </div>
+
+    <div style="border:1px solid #d0e4f5;border-radius:6px;overflow:hidden;margin-bottom:16px;">
+      <div style="background:#0d3b66;color:#fff;padding:10px 18px;font-weight:700;font-size:13px;">
+        Eingliederungszuschuss (§ 88 SGB III) – Bei Neueinstellungen
+      </div>
+      <div style="padding:14px 18px;font-size:12px;">
+        <p>Bis zu <strong>50 % des Arbeitslohns</strong> für bis zu <strong>12 Monate</strong> bei Neueinstellung von Fachkräften mit Eingliederungshemmnissen (z.B. Sprachbarriere, neue Stelle).</p>
+        <p style="margin-top:8px;color:#dc3545;font-weight:600;">⚠ Antrag MUSS vor Arbeitsaufnahme gestellt werden – rückwirkend nicht möglich!</p>
+        <p style="margin-top:6px;color:#555;">Ansprechpartner: Agentur für Arbeit → Arbeitgeber-Service (kosten­loser Rückruf über arbeitsagentur.de)</p>
+      </div>
+    </div>
+
+    <!-- Nächste Schritte -->
+    <div class="section-title">Ihre nächsten Schritte (priorisiert)</div>
+    <ul class="schritte-list">
+      {% for s in naechste_schritte %}
+      <li class="schritt-item">
+        <div class="schritt-nr nr-{{ s.prioritaet }}">{{ s.nr }}</div>
+        <div class="schritt-content">
+          <div class="schritt-titel">{{ s.schritt }}</div>
+          <div class="schritt-details">{{ s.details }}</div>
+        </div>
+        <div class="prio-label">{{ s.prioritaet.replace('_', ' ').upper() }}</div>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <!-- Pflichten -->
+    <div class="section-title">Ihre Pflichten als Arbeitgeber</div>
+    <ul class="pflichten-list">
+      {% for p in pflichten %}
+      <li class="pflicht-item">
+        <div class="pflicht-check"></div>
+        <span>{{ p }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <!-- Wiedervorlage -->
+    {% if wiedervorlage %}
+    <div class="section-title">Wichtige Fristen Ihrer Mitarbeiter ({{ wiedervorlage|length }})</div>
+    {% for t in wiedervorlage %}
+    <div class="wv-item">
+      <div class="wv-datum wv-{{ t.prioritaet }}">{{ t.datum_str }}</div>
+      <div>
+        <strong>{{ t.kandidat_name }}</strong> – {{ t.beschreibung }}<br>
+        <span style="font-size:11px;color:#666;">{{ t.aktion }}</span>
+      </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- Kontakt -->
+    <div class="kontakt-box">
+      <div class="kontakt-text">
+        <h3>Ihr Ansprechpartner: Conveni Personalvermittlung</h3>
+        <div class="kontakt-info">
+          Bei Fragen zu Förderanträgen, Aufenthaltstiteln oder Kursen –
+          wir unterstützen Sie bei jedem Schritt.
+        </div>
+      </div>
+      <div style="text-align:right;font-size:12px;opacity:0.9;">
+        conveni.de<br>
+        info@conveni.de
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <span>Conveni Personalvermittlung | Arbeitgeber-Mappe für {{ ag_name }}</span>
+    <span>{{ datum }}</span>
+  </div>
+</div>
+</body>
+</html>
