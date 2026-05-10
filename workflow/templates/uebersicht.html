@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Kandidaten-Dashboard – Conveni</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; background: #f0f4f8; }
+    .header {
+      background: linear-gradient(135deg, #0d3b66, #1a6b9e);
+      color: #fff; padding: 22px 32px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .header h1 { font-size: 20px; }
+    .header .datum { font-size: 12px; opacity: 0.8; }
+    .main { max-width: 1200px; margin: 0 auto; padding: 24px 20px; }
+
+    /* Statistik-Karten */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+    .stat-card {
+      background: #fff; border-radius: 8px; padding: 18px 20px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08); text-align: center;
+    }
+    .stat-zahl { font-size: 36px; font-weight: 700; line-height: 1; }
+    .stat-label { font-size: 12px; color: #666; margin-top: 4px; }
+    .stat-gesamt .stat-zahl { color: #0d3b66; }
+    .stat-rot .stat-zahl { color: #dc3545; }
+    .stat-gelb .stat-zahl { color: #e6a800; }
+    .stat-gruen .stat-zahl { color: #28a745; }
+
+    /* Sektionsüberschrift */
+    .section-title {
+      font-size: 15px; font-weight: 700; color: #0d3b66;
+      border-left: 4px solid #1a6b9e; padding-left: 10px;
+      margin: 24px 0 12px;
+    }
+
+    /* Kandidaten-Tabelle */
+    .table-wrap { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.08); margin-bottom: 24px; }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      background: #0d3b66; color: #fff; padding: 10px 12px;
+      text-align: left; font-size: 12px; font-weight: 600; white-space: nowrap;
+    }
+    td { padding: 9px 12px; border-bottom: 1px solid #eee; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f5f9ff; }
+
+    /* Ampel */
+    .ampel {
+      display: inline-block; width: 12px; height: 12px;
+      border-radius: 50%; flex-shrink: 0;
+    }
+    .ampel-rot { background: #dc3545; }
+    .ampel-gelb { background: #ffc107; }
+    .ampel-gruen { background: #28a745; }
+
+    .badge {
+      display: inline-block; padding: 2px 8px; border-radius: 10px;
+      font-size: 11px; font-weight: 600; white-space: nowrap;
+    }
+    .badge-rot { background: #fde8e8; color: #c82333; }
+    .badge-gelb { background: #fff3cd; color: #856404; }
+    .badge-gruen { background: #d4edda; color: #155724; }
+    .badge-blau { background: #cce5ff; color: #004085; }
+    .badge-grau { background: #e9ecef; color: #495057; }
+
+    .prog-list { display: flex; flex-wrap: wrap; gap: 4px; }
+    .prog-tag {
+      background: #e3f0fb; color: #0d3b66;
+      padding: 2px 7px; border-radius: 10px; font-size: 10px;
+    }
+    .prog-tag-ag { background: #e8f5e9; color: #1b5e20; }
+
+    /* Wiedervorlage */
+    .wv-table { width: 100%; border-collapse: collapse; }
+    .wv-table th { background: #495057; color: #fff; padding: 8px 12px; font-size: 12px; text-align: left; }
+    .wv-table td { padding: 8px 12px; border-bottom: 1px solid #eee; font-size: 12px; }
+    .wv-table tr:last-child td { border-bottom: none; }
+    .prio-hoch { color: #dc3545; font-weight: 700; }
+    .prio-mittel { color: #e6a800; font-weight: 600; }
+    .prio-niedrig { color: #28a745; }
+
+    /* Programm-Statistik */
+    .prog-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 24px; }
+    .prog-stat-item {
+      background: #fff; border-radius: 6px; padding: 12px 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .prog-stat-name { font-size: 12px; color: #333; }
+    .prog-stat-zahl { font-size: 20px; font-weight: 700; color: #0d3b66; }
+
+    /* Aufenthaltsweg */
+    .aw-cell { font-size: 11px; color: #555; }
+
+    .footer { text-align: center; color: #999; font-size: 11px; padding: 20px 0 30px; }
+
+    @media print {
+      body { background: white; }
+      .main { padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>Kandidaten-Dashboard</h1>
+    <div class="datum">Conveni Personalvermittlung | Stand: {{ datum }}</div>
+  </div>
+  <div style="color:#fff; opacity:0.9; font-size:13px; text-align:right;">
+    Förderungs-Workflow<br>Philippinen &amp; Vietnam → Deutschland
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- Statistik-Karten -->
+  <div class="stats">
+    <div class="stat-card stat-gesamt">
+      <div class="stat-zahl">{{ statistik.gesamt }}</div>
+      <div class="stat-label">Kandidaten gesamt</div>
+    </div>
+    <div class="stat-card stat-rot">
+      <div class="stat-zahl">{{ statistik.rot }}</div>
+      <div class="stat-label">Dringender Handlungsbedarf</div>
+    </div>
+    <div class="stat-card stat-gelb">
+      <div class="stat-zahl">{{ statistik.gelb }}</div>
+      <div class="stat-label">Handlungsbedarf</div>
+    </div>
+    <div class="stat-card stat-gruen">
+      <div class="stat-zahl">{{ statistik.gruen }}</div>
+      <div class="stat-label">Alles im Plan</div>
+    </div>
+  </div>
+
+  <!-- Kandidaten-Tabelle -->
+  <div class="section-title">Alle Kandidaten</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Name</th>
+          <th>Nationalität</th>
+          <th>Niveau</th>
+          <th>Berufsfeld</th>
+          <th>Aufenthaltstitel / NE</th>
+          <th>Anerkennung</th>
+          <th>Förderprogramme</th>
+          <th>Eigenanteil ca.</th>
+          <th>Nächster Schritt</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for k in kandidaten %}
+        <tr>
+          <td>
+            <span class="ampel ampel-{{ k.status_ampel }}"></span>
+            <span class="badge badge-{{ k.status_ampel }}" style="margin-left:4px;">
+              {% if k.status_ampel == 'rot' %}Dringend{% elif k.status_ampel == 'gelb' %}Prüfen{% else %}OK{% endif %}
+            </span>
+          </td>
+          <td>
+            <strong>{{ k.name }}</strong><br>
+            <span style="color:#888;font-size:11px;">{{ k.email }}</span>
+          </td>
+          <td>{{ k.nationalitaet }}</td>
+          <td><span class="badge badge-blau">{{ k.sprachniveau }}</span></td>
+          <td>
+            {{ k.berufsfeld }}<br>
+            <span style="color:#888;font-size:10px;">{{ k.qualifikation_abschluss }}</span>
+          </td>
+          <td class="aw-cell">
+            <span style="font-size:11px;font-weight:600;color:#0d3b66;">{{ k.aufenthaltsweg.bezeichnung.split('(')[0].strip() }}</span><br>
+            Ablauf: {{ k.aufenthaltstitel_ablauf }}<br>
+            <span style="color:#888;">NE: {{ k.aufenthaltsweg.niederlassungserlaubnis_nach }}</span>
+          </td>
+          <td>
+            {% if k.anerkennungsstelle.reglementiert %}
+              <span class="badge badge-rot">Pflicht</span>
+            {% else %}
+              <span class="badge badge-grau">Optional</span>
+            {% endif %}<br>
+            <span style="font-size:10px;color:#555;">{{ k.anerkennungsstelle.verfahren.split('→')[0].strip() }}</span>
+          </td>
+          <td>
+            <div class="prog-list">
+              {% for p in k.berechtigte_programme %}
+                {% set pname = p.name.split('–')[0].strip().split('(')[0].strip() %}
+                {% if 'Qualifizierungschancen' in p.name or 'Eingliederung' in p.name or 'Bildungsprämie' in p.name %}
+                  <span class="prog-tag prog-tag-ag" title="{{ p.empfohlenes_modul }}">AG: {{ pname[:20] }}</span>
+                {% else %}
+                  <span class="prog-tag" title="{{ p.empfohlenes_modul }}">{{ pname[:22] }}</span>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </td>
+          <td style="white-space:nowrap;">
+            {% if k.kosten.eigenanteil_gesamt > 0 %}
+              ca. {{ k.kosten.eigenanteil_gesamt|int }} €
+            {% else %}
+              kostenfrei
+            {% endif %}
+          </td>
+          <td style="font-size:11px;">
+            {% if k.naechste_schritte %}
+              {% set erster = k.naechste_schritte[0] %}
+              <span class="prio-{{ erster.prioritaet.replace('_', '') if erster.prioritaet != 'diese_woche' else 'mittel' }}">
+                [{{ erster.prioritaet.replace('_', ' ').upper() }}]
+              </span><br>
+              {{ erster.schritt }}
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Programm-Statistik -->
+  <div class="section-title">Förderprogramm-Übersicht</div>
+  <div class="prog-stats">
+    {% for name, anzahl in programme_zaehler %}
+    <div class="prog-stat-item">
+      <div class="prog-stat-name">{{ name }}</div>
+      <div class="prog-stat-zahl">{{ anzahl }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Wiedervorlage-Kalender -->
+  <div class="section-title">Wiedervorlage &amp; Termine ({{ alle_wiedervorlage|length }})</div>
+  <div class="table-wrap">
+    <table class="wv-table">
+      <thead>
+        <tr>
+          <th>Priorität</th>
+          <th>Fällig am</th>
+          <th>Erinnerung ab</th>
+          <th>Kandidat</th>
+          <th>Beschreibung</th>
+          <th>Aktion</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in alle_wiedervorlage %}
+        <tr>
+          <td class="prio-{{ t.prioritaet }}">
+            {% if t.prioritaet == 'hoch' %}⚠ HOCH{% elif t.prioritaet == 'mittel' %}⚡ Mittel{% else %}✓ Niedrig{% endif %}
+          </td>
+          <td style="white-space:nowrap; font-weight:600;">{{ t.datum_str }}</td>
+          <td style="white-space:nowrap; color:#888;">{{ t.erinnerung_str }}</td>
+          <td>{{ t.kandidat_name }}</td>
+          <td>{{ t.beschreibung }}</td>
+          <td style="font-size:11px;">{{ t.aktion }}</td>
+        </tr>
+        {% endfor %}
+        {% if not alle_wiedervorlage %}
+        <tr><td colspan="6" style="text-align:center;color:#999;padding:20px;">Keine Wiedervorlagen vorhanden.</td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Legende -->
+  <div style="background:#fff;border-radius:8px;padding:16px 20px;box-shadow:0 1px 6px rgba(0,0,0,0.08);font-size:12px;color:#555;">
+    <strong>Legende:</strong>
+    &nbsp; <span class="ampel ampel-rot" style="display:inline-block;vertical-align:middle;"></span> Dringender Handlungsbedarf (Ablauf, fehlende Anerkennung)
+    &nbsp; <span class="ampel ampel-gelb" style="display:inline-block;vertical-align:middle;"></span> Handlungsbedarf (Schritte anstehend)
+    &nbsp; <span class="ampel ampel-gruen" style="display:inline-block;vertical-align:middle;"></span> Im Plan
+    &nbsp;&nbsp;|&nbsp;&nbsp; <span class="prog-tag prog-tag-ag" style="display:inline;">AG:</span> = Arbeitgeberförderung
+  </div>
+
+</div>
+<div class="footer">Conveni Personalvermittlung | Sprachförderungs-Workflow | {{ datum }}</div>
+</body>
+</html>
