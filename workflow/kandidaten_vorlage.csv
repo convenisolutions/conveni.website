@@ -1,0 +1,6 @@
+nachname,vorname,geburtsdatum,nationalitaet,aufenthaltstitel,aufenthaltstitel_gueltig_bis,einreisedatum,sprachniveau_aktuell,beschaeftigt,arbeitgeber,berufsfeld,anerkennungsverfahren,email,telefon
+Nguyen,Thi Lan,1990-05-15,Vietnam,Aufenthaltserlaubnis § 18a,2026-12-31,2024-03-01,A2,ja,Pflegeheim Sonnenschein GmbH,Pflege,abgeschlossen,lan.nguyen@example.com,+49 151 12345678
+Santos,Maria,1988-11-22,Philippinen,Aufenthaltserlaubnis § 18b,2027-06-30,2024-06-01,A1,ja,Dr. Müller Arztpraxis,Medizin,laufend,maria.santos@example.com,+49 170 98765432
+Reyes,Jose,1995-03-10,Philippinen,Aufenthaltserlaubnis § 18a,2026-09-15,2023-11-01,B1,ja,Bau GmbH Muster,Handwerk,nicht beantragt,jose.reyes@example.com,+49 152 11223344
+Tran,Van Minh,1992-07-08,Vietnam,Blaue Karte EU,2027-03-31,2024-01-15,A2,ja,IT Solutions AG,IT,abgeschlossen,minh.tran@example.com,+49 160 55667788
+Dela Cruz,Ana,1997-09-30,Philippinen,Aufenthaltserlaubnis § 16d,2026-08-31,2024-04-10,A1,nein,arbeitssuchend,Gastronomie,laufend,ana.delacruz@example.com,+49 176 44556677

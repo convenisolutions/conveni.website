@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Förderchecklist – {{ kandidat.name }}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 13px;
+      color: #1a1a2e;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    .page {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #0d3b66, #1a6b9e);
+      color: #fff;
+      padding: 28px 32px;
+    }
+    .header h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .header .subtitle { font-size: 13px; opacity: 0.85; }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .meta-item {
+      padding: 14px 20px;
+      border-right: 1px solid #e0e0e0;
+    }
+    .meta-item:last-child { border-right: none; }
+    .meta-label { font-size: 10px; text-transform: uppercase; color: #888; letter-spacing: 0.5px; }
+    .meta-value { font-size: 14px; font-weight: 600; color: #0d3b66; margin-top: 2px; }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-gruen { background: #e6f4ea; color: #1e7e34; }
+    .badge-gelb { background: #fff8e1; color: #856404; }
+    .badge-blau { background: #e3f0fb; color: #0d3b66; }
+    .content { padding: 24px 32px; }
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0d3b66;
+      border-left: 4px solid #1a6b9e;
+      padding-left: 10px;
+      margin: 24px 0 14px;
+    }
+    .programm-card {
+      border: 1px solid #d0e4f5;
+      border-radius: 6px;
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+    .programm-header {
+      background: #e3f0fb;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .programm-name { font-weight: 700; font-size: 14px; color: #0d3b66; }
+    .programm-body { padding: 14px 16px; }
+    .programm-meta { color: #555; margin-bottom: 8px; font-size: 12px; }
+    .modul-box {
+      background: #f0f7ff;
+      border-left: 3px solid #1a6b9e;
+      padding: 8px 12px;
+      border-radius: 0 4px 4px 0;
+      margin-bottom: 12px;
+      font-size: 12px;
+    }
+    .modul-label { font-weight: 600; color: #0d3b66; }
+    .dok-title { font-weight: 600; font-size: 12px; color: #333; margin-bottom: 6px; }
+    .checklist { list-style: none; }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 5px 0;
+      border-bottom: 1px dashed #eee;
+      font-size: 12px;
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .checkbox {
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid #aaa;
+      border-radius: 3px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .hinweise { margin-top: 20px; }
+    .hinweis-item {
+      background: #fff8e1;
+      border-left: 4px solid #ffc107;
+      padding: 10px 14px;
+      border-radius: 0 4px 4px 0;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+    .hinweis-item.dringend {
+      background: #fde8e8;
+      border-left-color: #dc3545;
+    }
+    .footer {
+      border-top: 1px solid #e0e0e0;
+      padding: 14px 32px;
+      font-size: 11px;
+      color: #999;
+      display: flex;
+      justify-content: space-between;
+    }
+    @media print {
+      body { background: white; padding: 0; }
+      .page { box-shadow: none; border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <h1>Förder-Checkliste: {{ kandidat.name }}</h1>
+    <div class="subtitle">Erstellt am {{ datum }} | Conveni Personalvermittlung</div>
+  </div>
+
+  <div class="meta-grid">
+    <div class="meta-item">
+      <div class="meta-label">Nationalität</div>
+      <div class="meta-value">{{ kandidat.nationalitaet }}</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Sprachniveau</div>
+      <div class="meta-value">{{ kandidat.sprachniveau }}</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Beschäftigung</div>
+      <div class="meta-value">
+        {% if kandidat.beschaeftigt %}
+          <span class="badge badge-gruen">Ja – {{ kandidat.berufsfeld }}</span>
+        {% else %}
+          <span class="badge badge-gelb">Nein / Arbeitssuchend</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="section-title">
+      Förderprogramme ({{ kandidat.berechtigte_programme|length }} gefunden)
+    </div>
+
+    {% for prog in kandidat.berechtigte_programme %}
+    <div class="programm-card">
+      <div class="programm-header">
+        <div class="programm-name">{{ prog.name }}</div>
+        <span class="badge badge-blau">{{ prog.details.foerderer }}</span>
+      </div>
+      <div class="programm-body">
+        <div class="programm-meta">{{ prog.details.beschreibung }}</div>
+        <div class="programm-meta"><strong>Kosten:</strong> {{ prog.details.kosten }}</div>
+
+        <div class="modul-box">
+          <div class="modul-label">Empfohlenes Modul:</div>
+          {{ prog.empfohlenes_modul }}
+        </div>
+
+        <div class="dok-title">Benötigte Dokumente:</div>
+        <ul class="checklist">
+          {% for dok in prog.details.pflicht_dokumente %}
+          <li>
+            <div class="checkbox"></div>
+            <span>{{ dok }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    {% endfor %}
+
+    {% if kandidat.hinweise %}
+    <div class="section-title">Hinweise & Handlungsempfehlungen</div>
+    <div class="hinweise">
+      {% for hinweis in kandidat.hinweise %}
+      <div class="hinweis-item {% if 'DRINGEND' in hinweis %}dringend{% endif %}">
+        {{ hinweis }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if not kandidat.berechtigte_programme %}
+    <p style="color:#888; font-style:italic;">
+      Für diesen Kandidaten wurden keine passenden Förderprogramme gefunden.
+      Bitte Daten prüfen oder manuell beraten.
+    </p>
+    {% endif %}
+  </div>
+
+  <div class="footer">
+    <span>Conveni Personalvermittlung | Sprachförderungs-Workflow</span>
+    <span>{{ datum }}</span>
+  </div>
+</div>
+</body>
+</html>
