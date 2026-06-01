@@ -74,43 +74,10 @@ def set_font(run, name="Times New Roman", size=12, bold=False, italic=False, col
     if color:
         run.font.color.rgb = RGBColor(*color)
 
-# ── Header table: address left | logo right ──────────────────────────────
-tbl = doc.add_table(rows=1, cols=2)
-tbl.alignment = WD_TABLE_ALIGNMENT.LEFT
-tbl.style = "Table Grid"
-
-# Remove table borders
-for row in tbl.rows:
-    for cell in row.cells:
-        tc = cell._tc
-        tcPr = tc.get_or_add_tcPr()
-        tcBorders = OxmlElement("w:tcBorders")
-        for side in ("top", "left", "bottom", "right", "insideH", "insideV"):
-            border_el = OxmlElement(f"w:{side}")
-            border_el.set(qn("w:val"), "none")
-            tcBorders.append(border_el)
-        tcPr.append(tcBorders)
-
-left_cell  = tbl.cell(0, 0)
-right_cell = tbl.cell(0, 1)
-
-# Left: address (italic)
-addr_lines = [
-    "An David Stefanou",
-    "Geschäftsführer",
-    "Schüler Union Nördliche Weinstraße",
-]
-left_cell.paragraphs[0].clear()
-for i, line in enumerate(addr_lines):
-    p = left_cell.paragraphs[0] if i == 0 else left_cell.add_paragraph()
-    run = p.add_run(line)
-    set_font(run, size=11, italic=True)
-
-# Right: logo image, right-aligned
-right_cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.RIGHT
-right_cell.paragraphs[0].clear()
-run_img = right_cell.paragraphs[0].add_run()
-run_img.add_picture(buf, width=Cm(4.0))
+# ── Header: logo right-aligned ───────────────────────────────────────────
+p_logo = doc.add_paragraph()
+p_logo.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+p_logo.add_run().add_picture(buf, width=Cm(4.0))
 
 doc.add_paragraph()   # spacer
 
