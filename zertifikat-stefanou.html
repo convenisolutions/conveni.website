@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bescheinigung – David Stefanou</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 12pt;
+      color: #000;
+      background: #fff;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      padding: 25mm 25mm 20mm 25mm;
+      position: relative;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 18mm;
+    }
+
+    .header-address {
+      font-style: italic;
+      font-size: 11pt;
+      line-height: 1.55;
+      max-width: 110mm;
+    }
+
+    /* SU Logo */
+    .logo {
+      flex-shrink: 0;
+      width: 42mm;
+      height: 42mm;
+      background-color: #1a2a4a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4mm;
+    }
+
+    .logo-su {
+      font-size: 26pt;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 2px;
+      font-family: Arial, sans-serif;
+      line-height: 1;
+    }
+
+    .logo-icons {
+      font-size: 10pt;
+      margin: 1mm 0;
+      line-height: 1;
+    }
+
+    .logo-sub {
+      font-size: 5.5pt;
+      color: #fff;
+      letter-spacing: 1.2px;
+      font-family: Arial, sans-serif;
+      text-transform: uppercase;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    /* ── Date line ── */
+    .date-line {
+      text-align: right;
+      margin-bottom: 10mm;
+      font-size: 12pt;
+    }
+
+    /* ── Subject ── */
+    .subject {
+      font-weight: bold;
+      text-decoration: underline;
+      margin-bottom: 8mm;
+      font-size: 12pt;
+    }
+
+    /* ── Body ── */
+    .body {
+      line-height: 1.6;
+      margin-bottom: 6mm;
+    }
+
+    .body p {
+      margin-bottom: 4mm;
+    }
+
+    .highlight {
+      font-weight: bold;
+      text-align: center;
+      margin: 8mm 0;
+      font-size: 12pt;
+    }
+
+    /* ── Closing ── */
+    .closing {
+      margin-top: 8mm;
+      line-height: 1.6;
+    }
+
+    /* ── Signature block ── */
+    .signature-block {
+      margin-top: 16mm;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 80mm;
+    }
+
+    .signature-line {
+      width: 70mm;
+      border-bottom: 1px solid #000;
+      margin-bottom: 1.5mm;
+      height: 14mm;
+    }
+
+    .signature-name {
+      font-size: 11pt;
+    }
+
+    .signature-title {
+      font-size: 11pt;
+      font-style: italic;
+      color: #333;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      position: absolute;
+      bottom: 12mm;
+      left: 25mm;
+      right: 25mm;
+      border-top: 0.5px solid #aaa;
+      padding-top: 3mm;
+      font-size: 8.5pt;
+      color: #555;
+      text-align: center;
+    }
+
+    @media print {
+      body { background: #fff; }
+      .page {
+        margin: 0;
+        padding: 25mm 25mm 20mm 25mm;
+        width: 210mm;
+        min-height: 297mm;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-address">
+      An David Stefanou<br>
+      Geschäftsführer<br>
+      Schüler Union Nördliche Weinstraße
+    </div>
+    <div class="logo">
+      <span class="logo-su">SU</span>
+      <span class="logo-icons">🍇🇩🇪</span>
+      <span class="logo-sub">Nördliche<br>Weinstraße</span>
+    </div>
+  </div>
+
+  <!-- Date -->
+  <div class="date-line">Bad Dürkheim, 1. Juni 2026</div>
+
+  <!-- Subject -->
+  <div class="subject">Bescheinigung über die Funktion als Geschäftsführer</div>
+
+  <!-- Body -->
+  <div class="body">
+    <p>Hiermit wird bestätigt, dass</p>
+
+    <p class="highlight">
+      David Stefanou
+    </p>
+
+    <p>
+      seit <strong>November 2025</strong> das Amt des <strong>Geschäftsführers</strong>
+      des Kreisverbandes <strong>Schüler Union Nördliche Weinstraße</strong> innehat.
+    </p>
+
+    <p>
+      David Stefanou nimmt diese Funktion mit Verantwortung und Engagement wahr und
+      ist offiziell als Mitglied des Kreisvorstands der Schüler Union Nördliche
+      Weinstraße eingetragen.
+    </p>
+
+    <p>
+      Diese Bescheinigung wird auf Wunsch ausgestellt und dient als Nachweis über die
+      genannte Funktion innerhalb der Organisation.
+    </p>
+  </div>
+
+  <!-- Closing -->
+  <div class="closing">
+    <p>Mit freundlichen Grüßen,</p>
+  </div>
+
+  <!-- Signature -->
+  <div class="signature-block">
+    <div class="signature-line"></div>
+    <div class="signature-name">Darian Friedrich</div>
+    <div class="signature-title">Kreisvorsitzender</div>
+    <div class="signature-title">Schüler Union Nördliche Weinstraße</div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    Schüler Union Nördliche Weinstraße &nbsp;|&nbsp;
+    Kontakt: darian.friederich.su.rlp@gmail.com
+  </div>
+
+</div>
+</body>
+</html>
